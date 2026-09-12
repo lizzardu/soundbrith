@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Doentes — SoundBirth · CREIC</title>
+<link rel="icon" type="image/png" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body class="page-tint" data-area="profissional" data-pagina="dashboard.html">
+<div id="topbar"></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main-area">
+
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap; margin-bottom:22px;">
+      <div>
+        <p class="eyebrow">CREIC · Implante coclear</p>
+        <h1 style="font-size:1.8rem;">Doentes em percurso</h1>
+      </div>
+      <a class="btn btn-primary" href="#">Registar nova referenciação</a>
+    </div>
+
+    <div class="grid g-4" style="margin-bottom:26px;">
+      <div class="card stat"><div class="num" id="s-total">—</div><div class="lbl">Em seguimento ativo</div></div>
+      <div class="card stat"><div class="num" id="s-estudo">—</div><div class="lbl">Candidaturas em estudo</div></div>
+      <div class="card stat"><div class="num" id="s-lista">—</div><div class="lbl">Em lista cirúrgica</div></div>
+      <div class="card stat"><div class="num" id="s-alertas" style="color:var(--alert);">—</div><div class="lbl">Alertas por tratar</div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px; padding:18px 22px;">
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+        <span class="hint" style="font-weight:600;">Filtrar por fase:</span>
+        <div class="chip-group" id="filtros"></div>
+      </div>
+    </div>
+
+    <div class="card card-flush table-scroll">
+      <table>
+        <thead>
+          <tr><th>Doente</th><th>Fase / etapa atual</th><th>No percurso desde</th><th>Uso diário</th><th>Próximo passo</th><th></th></tr>
+        </thead>
+        <tbody id="linhas"></tbody>
+      </table>
+    </div>
+    <p class="hint" style="margin-top:12px;">
+      A coluna <strong>uso diário</strong> vem do datalogging do processador, lido na última
+      programação. Abaixo de 6&nbsp;h/dia no primeiro ano gera alerta automático.
+    </p>
+
+  </main>
+</div>
+
+<script charset="utf-8" src="../assets/js/dados.js"></script>
+<script charset="utf-8" src="../assets/js/app.js"></script>
+<script>
+  const ind = CREIC.indicadores;
+  const porId = id => document.getElementById(id);
+  porId('s-total').textContent   = ind.emSeguimento;
+  porId('s-estudo').textContent  = ind.candidaturasEmEstudo;
+  porId('s-lista').textContent   = ind.listaCirurgica;
+  porId('s-alertas').textContent = CREIC.alertas.filter(a => a.nivel !== 'info').length;
+
+  const fases = ['Todas', ...new Set(CREIC.listaDoentes.map(d => d.fase))];
+  document.getElementById('filtros').innerHTML = fases.map((f, i) =>
+    `<label class="chip"><input type="radio" name="fase" value="${f}" ${i === 0 ? 'checked' : ''}
+      onchange="pintar(this.value)"><span>${f}</span></label>`).join('');
+
+  const risco = { ok:'pill-ok', atraso:'pill-warn', alerta:'pill-alert' };
+  const rotulo = { ok:'a decorrer', atraso:'parado', alerta:'atenção' };
+
+  function pintar(fase){
+    const lista = CREIC.listaDoentes.filter(d => !fase || fase === 'Todas' || d.fase === fase);
+    document.getElementById('linhas').innerHTML = lista.map(d => `
+      <tr class="row-link" onclick="location.href='doente.html'">
+        <td>
+          <strong>${d.nome}</strong>
+          ${d.lgp ? '<span class="pill pill-sign" style="margin-left:6px;">LGP</span>' : ''}
+          <br><span class="mono hint">${d.processo} · ${d.idade} ${d.idade === 1 ? 'ano' : 'anos'} · ${d.tipo}</span>
+        </td>
+        <td>${d.fase}<br><span class="hint">${d.etapa}</span></td>
+        <td class="mono hint">${d.desde}</td>
+        <td>${d.uso == null ? '<span class="hint">—</span>'
+            : `<span class="mono">${num(d.uso.toFixed(1))} h</span>
+               <div class="bar ${d.uso < 6 ? 'b-alert' : ''}" style="max-width:70px;"><span style="width:${Math.min(d.uso/12*100,100)}%"></span></div>`}</td>
+        <td style="font-size:.85rem;">${d.proximo}</td>
+        <td><span class="pill ${risco[d.risco]}">${rotulo[d.risco]}</span></td>
+      </tr>`).join('');
+  }
+  pintar('Todas');
+</script>
+</body>
+</html>

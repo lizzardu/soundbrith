@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Início — SoundBirth</title>
+<link rel="icon" type="image/png" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body class="page-tint" data-area="familia" data-pagina="dashboard.html">
+<div id="topbar"></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main-area">
+
+    <p class="eyebrow">Olá, Marta</p>
+    <h1 style="font-size:1.9rem;">A Laura está em reabilitação, e vai bem</h1>
+    <p style="color:var(--ink-soft); max-width:66ch;">
+      Foi implantada aos 11 meses, nos dois ouvidos, e ouve há dois anos e um mês. É esse
+      tempo — a <strong>idade auditiva</strong> — que conta para comparar o progresso dela,
+      e não a idade que tem no bilhete de identidade.
+    </p>
+
+    <div class="grid g-4" style="margin-top:22px;">
+      <div class="card stat"><div class="num">3 anos</div><div class="lbl">Idade</div></div>
+      <div class="card stat"><div class="num" style="color:var(--wave-deep);">2a 1m</div><div class="lbl">Idade auditiva</div></div>
+      <div class="card stat"><div class="num">11,4 h</div><div class="lbl">Uso médio por dia</div></div>
+      <div class="card stat"><div class="num">4 de 6</div><div class="lbl">Marcos de linguagem atingidos</div></div>
+    </div>
+
+    <!-- onde estamos -->
+    <div class="card" style="margin-top:24px;">
+      <p class="eyebrow">Onde estamos na jornada</p>
+      <div class="onda onda-light" id="onda-crianca"></div>
+      <p class="hint" style="margin:8px 0 0;">
+        <strong id="contagem-etapas"></strong> · <a href="jornada.html">ver a jornada toda</a>
+      </p>
+    </div>
+
+    <div class="grid g-2" style="margin-top:24px; align-items:start;">
+
+      <!-- marcos de linguagem -->
+      <div class="card">
+        <p class="eyebrow">Desenvolvimento da linguagem</p>
+        <h2 style="font-size:1.15rem;">O que já apareceu, e o que vem a seguir</h2>
+        <p style="font-size:.9rem; color:var(--ink-soft);">
+          Depois do implante, a linguagem segue a ordem normal — só que a contar do dia da
+          ativação. Cada marco aparece aqui quando a terapeuta o confirma na sessão.
+        </p>
+        <div id="lista-marcos"></div>
+      </div>
+
+      <div>
+        <!-- a seguir -->
+        <div class="card">
+          <p class="eyebrow">A seguir</p>
+          <h2 style="font-size:1.15rem;">Terapia auditivo-verbal</h2>
+          <p class="mono" style="font-size:.9rem; color:var(--wave-deep); margin-bottom:6px;">29 Set 2026, 14h00</p>
+          <p style="font-size:.9rem; color:var(--ink-soft);">
+            CREIC · Gabinete 4, com a terapeuta da fala.<br>
+            Traga um brinquedo ou livro preferido da Laura.
+          </p>
+          <div class="banner-info">
+            <span aria-hidden="true">&#128161;</span>
+            <span>A sessão é consigo dentro da sala. Quem treina a Laura todos os dias é a
+            família — a terapeuta ensina-lhe como.</span>
+          </div>
+          <a class="btn btn-ghost btn-sm" href="marcacoes.html">Ver marcações</a>
+        </div>
+
+        <!-- uso -->
+        <div class="card" style="margin-top:20px;">
+          <p class="eyebrow">Uso dos processadores</p>
+          <h2 style="font-size:1.15rem;">Horas por dia, mês a mês</h2>
+          <div id="grafico-uso"></div>
+          <p class="hint" style="margin-top:8px;">
+            Nesta idade, a meta é <strong>todas as horas acordada</strong> — cerca de 11 a 12 h.
+            Cada hora sem os processadores é uma hora sem linguagem a entrar.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- por fazer -->
+    <div class="card" style="margin-top:24px;">
+      <p class="eyebrow">Por fazer</p>
+      <ul style="margin:0; padding-left:20px; font-size:.92rem; line-height:1.9;">
+        <li><a href="questionarios.html">LittlEARS e PEACH</a> — questionários de pais, até 10 de outubro</li>
+        <li><a href="treino.html">Treino em casa</a> — 20 de 24 atividades esta semana</li>
+        <li><a href="marcacoes.html">Reunião com a creche</a> a 22 de outubro — confirmar presença e intérprete de LGP</li>
+      </ul>
+    </div>
+
+  </main>
+</div>
+
+<script charset="utf-8" src="../assets/js/dados.js"></script>
+<script charset="utf-8" src="../assets/js/dados-pediatria.js"></script>
+<script charset="utf-8" src="../assets/js/app.js"></script>
+<script>
+  const c = CREIC.crianca;
+  desenharOnda('onda-crianca', CREIC.jornadaPediatrica, c.estados, c.etapaAtual);
+
+  const total = CREIC.jornadaPediatrica.reduce((n, f) => n + f.etapas.length, 0);
+  const feitas = Object.values(c.estados).filter(e => e === 'feito').length;
+  document.getElementById('contagem-etapas').textContent = feitas + ' de ' + total + ' etapas cumpridas';
+
+  desenharBarras('grafico-uso', CREIC.usoCrianca,
+    ['Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set'],
+    { max:13, unidade:' h', alvo:11, alvoTxt:'todas as horas acordada',
+      descricao:'Uso diario dos processadores: subiu de 6,8 para 11,4 horas por dia em seis meses' });
+
+  document.getElementById('lista-marcos').innerHTML = CREIC.marcosLinguagem.map(m => {
+    const cor = m.estado === 'atingido' ? 'pill-ok' : (m.estado === 'em curso' ? 'pill-pending' : 'pill-warn');
+    return `<div style="display:flex; justify-content:space-between; gap:12px; align-items:center;
+                 padding:11px 0; border-bottom:1px solid var(--line);">
+      <div>
+        <strong style="font-size:.9rem;">${m.marco}</strong><br>
+        <span class="hint mono">idade auditiva ${m.idadeAuditiva}</span>
+      </div>
+      <span class="pill ${cor}">${m.estado === 'atingido' ? m.quando : m.estado}</span>
+    </div>`;
+  }).join('');
+</script>
+</body>
+</html>

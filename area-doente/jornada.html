@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>A minha jornada — SoundBirth</title>
+<link rel="icon" type="image/png" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body class="page-tint" data-area="doente" data-pagina="jornada.html">
+<div id="topbar"></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main-area">
+
+    <p class="eyebrow">A minha jornada</p>
+    <h1 style="font-size:1.9rem;">Todo o percurso, do princípio ao fim</h1>
+    <p style="color:var(--ink-soft); max-width:68ch;">
+      Este é o caminho completo de quem recebe um implante coclear. As etapas com
+      <strong>visto</strong> já estão feitas, a etapa a azul é onde está agora, e as restantes
+      ainda vêm a caminho. Cada etapa diz quem a faz e quanto tempo costuma demorar.
+    </p>
+
+    <div class="banner-info" style="margin:20px 0 26px; max-width:70ch;">
+      <span aria-hidden="true">&#8505;</span>
+      <span>Os tempos indicados são os habituais no centro, não uma promessa. Se uma etapa
+      demorar mais do que o previsto, a equipa é avisada automaticamente.</span>
+    </div>
+
+    <div id="jornada-detalhe" style="max-width:860px;"></div>
+
+  </main>
+</div>
+
+<script charset="utf-8" src="../assets/js/dados.js"></script>
+<script charset="utf-8" src="../assets/js/app.js"></script>
+<script>
+  const est = CREIC.doente.estados, dat = CREIC.doente.datas;
+  const marca = { feito:'&#10003;', ativo:'&#9679;', previsto:'' };
+
+  document.getElementById('jornada-detalhe').innerHTML = CREIC.jornadaModelo.map((f, i) => `
+    <section class="fase">
+      <div class="fase-head">
+        <span class="fase-num">${i+1}</span>
+        <h2>${f.fase}</h2>
+      </div>
+      <p style="font-size:.9rem; color:var(--ink-soft); margin:-4px 0 12px 44px;">${f.resumo}</p>
+      ${f.etapas.map(e => {
+        const s = est[e.id] || 'previsto';
+        const cls = s === 'feito' ? 'is-done' : (s === 'ativo' ? 'is-active' : '');
+        return `<article class="etapa ${cls}">
+          <span class="etapa-marca" aria-hidden="true">${marca[s]}</span>
+          <div class="etapa-corpo">
+            <h3 class="etapa-titulo">${e.titulo}</h3>
+            <div class="etapa-meta">
+              <span class="etapa-tag">${e.quem}</span>
+              <span class="etapa-tag">${e.prazo}</span>
+              ${dat[e.id] ? `<span class="pill ${s === 'feito' ? 'pill-ok' : 'pill-pending'}">${dat[e.id]}</span>` : ''}
+            </div>
+            <p>${e.nota}</p>
+          </div>
+        </article>`;
+      }).join('')}
+    </section>`).join('');
+</script>
+</body>
+</html>

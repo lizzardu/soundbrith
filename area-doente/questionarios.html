@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Questionários — SoundBirth</title>
+<link rel="icon" type="image/png" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body class="page-tint" data-area="doente" data-pagina="questionarios.html">
+<div id="topbar"></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main-area">
+
+    <p class="eyebrow">Questionários</p>
+    <h1 style="font-size:1.9rem;">O que só o senhor nos pode dizer</h1>
+    <p style="color:var(--ink-soft); max-width:68ch;">
+      Os testes na cabine medem o que o seu ouvido faz. Estes questionários medem o que a sua
+      vida mudou — e é isso que decide se o implante está a cumprir o objetivo. As respostas
+      ficam no seu processo e são vistas pela equipa antes da consulta.
+    </p>
+
+    <div class="card card-flush table-scroll" style="margin-top:22px; max-width:860px;">
+      <table>
+        <thead><tr><th>Questionário</th><th>Quando se responde</th><th>Estado</th><th></th></tr></thead>
+        <tbody id="linhas-questionarios"></tbody>
+      </table>
+    </div>
+
+    <!-- exemplo de questionário aberto -->
+    <div class="card" style="max-width:820px; margin-top:26px;">
+      <p class="eyebrow">Por responder · 6 minutos</p>
+      <h2 style="font-size:1.25rem;">SSQ12 — a audição no seu dia a dia</h2>
+      <p style="font-size:.9rem; color:var(--ink-soft);">
+        Pense nas últimas duas semanas. Para cada situação, marque de 0 (nada) a 10
+        (perfeitamente). Se a situação nunca lhe aconteceu, escolha "não se aplica".
+      </p>
+      <hr class="divider">
+
+      <div class="field">
+        <label>1. Está a conversar com uma pessoa, num quarto sossegado. Consegue acompanhar?</label>
+        <div class="scale" role="radiogroup" aria-label="Pergunta 1, de 0 a 10">
+          <label class="scale-opt"><input type="radio" name="q1"><span>0</span></label>
+          <label class="scale-opt"><input type="radio" name="q1"><span>2</span></label>
+          <label class="scale-opt"><input type="radio" name="q1"><span>4</span></label>
+          <label class="scale-opt"><input type="radio" name="q1"><span>6</span></label>
+          <label class="scale-opt"><input type="radio" name="q1" checked><span>8</span></label>
+          <label class="scale-opt"><input type="radio" name="q1"><span>10</span></label>
+        </div>
+        <div class="scale-labels" style="max-width:340px;"><span>Nada</span><span>Perfeitamente</span></div>
+      </div>
+
+      <div class="field">
+        <label>2. Está à mesa com cinco pessoas, num restaurante com ruído. Consegue seguir a conversa?</label>
+        <div class="scale" role="radiogroup" aria-label="Pergunta 2, de 0 a 10">
+          <label class="scale-opt"><input type="radio" name="q2"><span>0</span></label>
+          <label class="scale-opt"><input type="radio" name="q2" checked><span>2</span></label>
+          <label class="scale-opt"><input type="radio" name="q2"><span>4</span></label>
+          <label class="scale-opt"><input type="radio" name="q2"><span>6</span></label>
+          <label class="scale-opt"><input type="radio" name="q2"><span>8</span></label>
+          <label class="scale-opt"><input type="radio" name="q2"><span>10</span></label>
+        </div>
+        <div class="scale-labels" style="max-width:340px;"><span>Nada</span><span>Perfeitamente</span></div>
+      </div>
+
+      <div class="field">
+        <label>3. Ouve um som e consegue perceber de que lado vem?</label>
+        <div class="scale" role="radiogroup" aria-label="Pergunta 3, de 0 a 10">
+          <label class="scale-opt"><input type="radio" name="q3"><span>0</span></label>
+          <label class="scale-opt"><input type="radio" name="q3"><span>2</span></label>
+          <label class="scale-opt"><input type="radio" name="q3" checked><span>4</span></label>
+          <label class="scale-opt"><input type="radio" name="q3"><span>6</span></label>
+          <label class="scale-opt"><input type="radio" name="q3"><span>8</span></label>
+          <label class="scale-opt"><input type="radio" name="q3"><span>10</span></label>
+        </div>
+        <div class="scale-labels" style="max-width:340px;"><span>Nada</span><span>Perfeitamente</span></div>
+      </div>
+
+      <p class="hint">Faltam 9 perguntas. Pode parar e continuar depois — o que responder fica guardado.</p>
+      <div style="display:flex; gap:12px; flex-wrap:wrap;">
+        <button class="btn btn-wave" type="button" onclick="this.textContent='Respostas guardadas'">Continuar</button>
+        <button class="btn btn-ghost" type="button">Guardar e sair</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script charset="utf-8" src="../assets/js/dados.js"></script>
+<script charset="utf-8" src="../assets/js/app.js"></script>
+<script>
+  document.getElementById('linhas-questionarios').innerHTML = CREIC.questionarios.map(q => `
+    <tr>
+      <td><strong>${q.nome}</strong></td>
+      <td style="color:var(--ink-soft);">${q.quando}</td>
+      <td><span class="pill ${q.estado === 'respondido' ? 'pill-ok' : 'pill-warn'}">${q.estado}</span></td>
+      <td style="text-align:right;">
+        <span class="hint mono">${q.prazo}</span>
+        ${q.estado === 'respondido' ? '' : ' <a class="btn btn-ghost btn-sm" href="#">Responder</a>'}
+      </td>
+    </tr>`).join('');
+</script>
+</body>
+</html>

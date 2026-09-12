@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Indicadores do centro — SoundBirth · CREIC</title>
+<link rel="icon" type="image/png" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body class="page-tint" data-area="profissional" data-pagina="indicadores.html">
+<div id="topbar"></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main-area">
+
+    <p class="eyebrow">Indicadores</p>
+    <h1 style="font-size:1.8rem;">Como está o centro</h1>
+    <p style="color:var(--ink-soft); max-width:70ch;">
+      Os mesmos dados que servem para cuidar de cada doente servem, agregados, para gerir o
+      programa e responder a quem pede contas: tempos de espera, volume, resultados e adesão.
+      Nenhum destes números exige trabalho extra de quem está na consulta.
+    </p>
+
+    <div class="grid g-4" style="margin-top:24px;">
+      <div class="card stat"><div class="num">128</div><div class="lbl">Doentes em seguimento</div></div>
+      <div class="card stat"><div class="num">23</div><div class="lbl">Candidaturas em estudo</div></div>
+      <div class="card stat"><div class="num">11</div><div class="lbl">Em lista cirúrgica</div></div>
+      <div class="card stat"><div class="num" style="color:var(--warn);">11,4</div><div class="lbl">Meses medianos: referenciação → cirurgia</div></div>
+    </div>
+
+    <div class="grid g-2" style="margin-top:24px; align-items:start;">
+      <div class="card">
+        <p class="eyebrow">Tempo por fase</p>
+        <h2 style="font-size:1.15rem;">Onde o percurso demora (meses, mediana)</h2>
+        <div id="g-tempos"></div>
+        <p class="hint" style="margin-top:8px;">
+          O estudo de candidatura e a espera cirúrgica concentram quase todo o tempo. É aqui
+          que uma intervenção de gestão tem efeito real na vida do doente.
+        </p>
+      </div>
+
+      <div class="card">
+        <p class="eyebrow">Resultados</p>
+        <h2 style="font-size:1.15rem;">Discriminação vocal média no silêncio (%)</h2>
+        <div id="g-resultados"></div>
+        <p class="hint" style="margin-top:8px;">
+          Adultos implantados nos últimos 3 anos, monossílabos em lista aberta. n = 64.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid g-2" style="margin-top:24px; align-items:start;">
+      <div class="card">
+        <p class="eyebrow">Adesão</p>
+        <h2 style="font-size:1.15rem;">Uso diário do processador no primeiro ano</h2>
+        <div id="g-uso"></div>
+        <p class="hint" style="margin-top:8px;">
+          Percentagem de doentes por escalão de uso médio diário. Abaixo das 6 h há
+          acompanhamento reforçado.
+        </p>
+      </div>
+
+      <div class="card">
+        <p class="eyebrow">Acessibilidade</p>
+        <h2 style="font-size:1.15rem;">Qualidade do que prometemos</h2>
+        <table>
+          <tbody>
+            <tr><td>Consultas com intérprete de LGP pedido e garantido</td><td class="mono" style="text-align:right;">92%</td></tr>
+            <tr><td>Contactos feitos pelo canal preferido do doente</td><td class="mono" style="text-align:right;">88%</td></tr>
+            <tr><td>Conteúdos com legendas + LGP + transcrição</td><td class="mono" style="text-align:right;">100%</td></tr>
+            <tr><td>Taxa de resposta aos questionários (PROMs)</td><td class="mono" style="text-align:right;">74%</td></tr>
+            <tr><td>Doentes que abandonaram o percurso antes da decisão</td><td class="mono" style="text-align:right; color:var(--alert);">9%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script charset="utf-8" src="../assets/js/dados.js"></script>
+<script charset="utf-8" src="../assets/js/app.js"></script>
+<script>
+  desenharBarras('g-tempos', [2.1, 5.8, 1.2, 2.3],
+    ['Referência → 1.ª consulta', 'Estudo de candidatura', 'Decisão → lista', 'Lista → cirurgia'],
+    { max:8, unidade:' meses', descricao:'Tempo mediano por fase do percurso, em meses' });
+
+  desenharBarras('g-resultados', [16, 38, 57, 68],
+    ['Pré-implante', '3 meses', '6 meses', '12 meses'],
+    { max:100, unidade:'%', descricao:'Discriminacao vocal media: 16% antes, 68% aos 12 meses' });
+
+  desenharBarras('g-uso', [7, 14, 31, 48],
+    ['< 4 h', '4 a 6 h', '6 a 10 h', '> 10 h'],
+    { max:60, unidade:'%', cor:'#6C63C4', descricao:'Distribuicao dos doentes por horas de uso diario' });
+</script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Reunião multidisciplinar — SoundBirth · CREIC</title>
+<link rel="icon" type="image/png" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body class="page-tint" data-area="profissional" data-pagina="reuniao.html">
+<div id="topbar"></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main-area">
+
+    <p class="eyebrow">Grupo de implante coclear</p>
+    <h1 style="font-size:1.8rem;">Reunião de decisão de candidatura</h1>
+    <p class="mono" style="color:var(--wave-deep);" id="cabecalho-reuniao"></p>
+    <p style="color:var(--ink-soft); max-width:70ch;">
+      Cada caso chega à reunião com as seis avaliações reunidas numa página. O que falta
+      aparece a vermelho — e um caso incompleto não deve consumir tempo de reunião.
+      A decisão fica registada em ata e entra automaticamente na jornada do doente.
+    </p>
+
+    <div id="casos" style="margin-top:24px;"></div>
+
+  </main>
+</div>
+
+<script charset="utf-8" src="../assets/js/dados.js"></script>
+<script charset="utf-8" src="../assets/js/app.js"></script>
+<script>
+  const r = CREIC.reuniao;
+  document.getElementById('cabecalho-reuniao').textContent =
+    r.data + ' · ' + r.local + ' · ' + r.presentes.join(', ');
+
+  document.getElementById('casos').innerHTML = r.casos.map((c, i) => `
+    <div class="card" style="margin-bottom:20px;">
+      <div style="display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; align-items:flex-start;">
+        <div>
+          <p class="eyebrow">Caso ${i+1}</p>
+          <h2 style="font-size:1.2rem; margin-bottom:2px;">${c.nome}</h2>
+          <p class="mono hint" style="margin:0;">${c.processo} · ${c.idade} ${c.idade === 1 ? 'ano' : 'anos'}</p>
+        </div>
+        <span class="pill ${c.pendente ? 'pill-warn' : 'pill-ok'}">
+          ${c.pendente ? 'processo incompleto' : 'pronto para decisão'}
+        </span>
+      </div>
+
+      <p style="font-size:.92rem; margin:14px 0 16px;">${c.sintese}</p>
+
+      <div class="grid g-2" style="gap:14px;">
+        <div><strong style="font-size:.82rem;">Audiologia</strong><p style="font-size:.86rem; color:var(--ink-soft); margin:4px 0 0;">${c.audiologia}</p></div>
+        <div><strong style="font-size:.82rem;">Imagem</strong><p style="font-size:.86rem; color:var(--ink-soft); margin:4px 0 0;">${c.imagem}</p></div>
+        <div><strong style="font-size:.82rem;">Terapia da fala</strong><p style="font-size:.86rem; color:var(--ink-soft); margin:4px 0 0;">${c.fala}</p></div>
+        <div><strong style="font-size:.82rem;">Psicologia</strong><p style="font-size:.86rem; color:var(--ink-soft); margin:4px 0 0;">${c.psico}</p></div>
+      </div>
+
+      ${c.pendente ? `<div class="banner-alert" style="margin-top:16px;">
+        <span aria-hidden="true">&#9888;</span>
+        <span><strong>Em falta:</strong> ${c.pendente}</span></div>` : ''}
+
+      <hr class="divider">
+      <p class="eyebrow">Decisão da equipa</p>
+      <div class="chip-group">
+        <label class="chip"><input type="radio" name="dec${i}" ${c.proposta.startsWith('Candidat') || c.proposta.startsWith('Implanta') ? 'checked' : ''}><span>Candidato a implante</span></label>
+        <label class="chip"><input type="radio" name="dec${i}"><span>Não candidato</span></label>
+        <label class="chip"><input type="radio" name="dec${i}" ${c.proposta === 'Adiar decisão' ? 'checked' : ''}><span>Adiar — completar estudo</span></label>
+        <label class="chip"><input type="radio" name="dec${i}"><span>Rever em 6 meses</span></label>
+      </div>
+      <div class="field" style="margin:16px 0 0;">
+        <label for="ata${i}">Nota para a ata</label>
+        <input type="text" id="ata${i}" value="${c.proposta}">
+      </div>
+      <button class="btn btn-primary" type="button" style="margin-top:16px;"
+              onclick="this.textContent='Decisão registada na jornada do doente'">Registar decisão</button>
+    </div>`).join('');
+</script>
+</body>
+</html>

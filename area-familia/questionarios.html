@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Questionários — SoundBirth</title>
+<link rel="icon" type="image/png" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body class="page-tint" data-area="familia" data-pagina="questionarios.html">
+<div id="topbar"></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main-area">
+
+    <p class="eyebrow">Questionários</p>
+    <h1 style="font-size:1.9rem;">O que vocês veem em casa, e nós não</h1>
+    <p style="color:var(--ink-soft); max-width:68ch;">
+      Na consulta, a Laura está num gabinete silencioso com pessoas que não conhece. Em casa,
+      na creche e no parque, é outra criança. Estes questionários são a única forma de trazer
+      esse lado para dentro do processo clínico — e são eles que mostram, meses antes dos
+      testes, quando alguma coisa não está a correr bem.
+    </p>
+
+    <div class="banner-sign" style="margin:20px 0; max-width:70ch;">
+      <span aria-hidden="true">&#9995;</span>
+      <span>Todos os questionários têm <strong>vídeo em Língua Gestual Portuguesa</strong> com
+      cada pergunta, e versão em linguagem simples. Se preferir, pode responder com a
+      terapeuta a acompanhar.</span>
+    </div>
+
+    <!-- por responder agora -->
+    <h2 style="font-size:1.25rem; margin-top:30px;">Para responder até 10 de outubro</h2>
+    <div class="grid g-2" style="margin-top:14px; align-items:start;">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+          <div>
+            <p class="eyebrow">Pais · 10 minutos</p>
+            <h3 style="font-size:1.05rem;">PEACH — como a Laura ouve no dia a dia</h3>
+          </div>
+          <span class="pill pill-warn">por responder</span>
+        </div>
+        <p style="font-size:.88rem; color:var(--ink-soft);">
+          Treze perguntas sobre situações concretas da última semana: em casa com barulho, na
+          rua, com a televisão ligada, quando a chamam de outra divisão.
+        </p>
+
+        <hr class="divider">
+        <div class="field">
+          <label>Na última semana, com barulho em casa (televisão, outras pessoas a falar),
+          com que frequência a Laura respondeu quando a chamaram pelo nome?</label>
+          <div class="chip-group">
+            <label class="chip"><input type="radio" name="peach1"><span>Nunca</span></label>
+            <label class="chip"><input type="radio" name="peach1"><span>Raramente</span></label>
+            <label class="chip"><input type="radio" name="peach1"><span>Às vezes</span></label>
+            <label class="chip"><input type="radio" name="peach1" checked><span>Muitas vezes</span></label>
+            <label class="chip"><input type="radio" name="peach1"><span>Quase sempre</span></label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Dê um exemplo do que aconteceu (opcional, mas é o que mais ajuda a equipa)</label>
+          <textarea rows="2" placeholder="ex.: chamei-a da cozinha com a máquina a trabalhar e ela veio à primeira"></textarea>
+        </div>
+        <button class="btn btn-wave" type="button" onclick="this.textContent='Guardado — faltam 12 perguntas'">Continuar</button>
+      </div>
+
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+          <div>
+            <p class="eyebrow">Pais · 8 minutos</p>
+            <h3 style="font-size:1.05rem;">LittlEARS — o percurso da audição</h3>
+          </div>
+          <span class="pill pill-warn">por responder</span>
+        </div>
+        <p style="font-size:.88rem; color:var(--ink-soft);">
+          Trinta e cinco perguntas de sim ou não. A pontuação é comparada com a curva esperada
+          para a <strong>idade auditiva</strong> da Laura — 2 anos e 1 mês —, e é isso que
+          diz se ela está a progredir ao ritmo previsto.
+        </p>
+        <div class="banner-info">
+          <span aria-hidden="true">&#128200;</span>
+          <span>Última resposta, em março: <strong>31 de 35</strong> — dentro do esperado para
+          a idade auditiva dela nessa altura.</span>
+        </div>
+        <button class="btn btn-ghost" type="button">Começar</button>
+      </div>
+    </div>
+
+    <!-- bateria da faixa -->
+    <h2 style="font-size:1.25rem; margin-top:34px;">O que se pergunta nesta idade, e porquê</h2>
+    <p style="color:var(--ink-soft); max-width:70ch;">
+      Dos 3 aos 5 anos quem responde são os pais e a educadora: a Laura ainda não tem idade
+      para avaliar a sua própria qualidade de vida. A partir dos 6 passa a responder ela,
+      com apoio na leitura — e as respostas dela nem sempre coincidem com as vossas, o que é
+      precisamente o que torna a resposta dela valiosa.
+    </p>
+    <div class="card card-flush table-scroll" style="margin-top:16px;">
+      <table>
+        <thead><tr><th>Instrumento</th><th>O que mede</th><th>Quem responde</th><th>Quando</th></tr></thead>
+        <tbody id="bateria-faixa"></tbody>
+      </table>
+    </div>
+
+    <!-- o que vem a seguir -->
+    <h2 style="font-size:1.25rem; margin-top:34px;">Como isto muda à medida que a Laura cresce</h2>
+    <div id="faixas" class="grid g-4" style="margin-top:14px;"></div>
+
+  </main>
+</div>
+
+<script charset="utf-8" src="../assets/js/dados.js"></script>
+<script charset="utf-8" src="../assets/js/dados-pediatria.js"></script>
+<script charset="utf-8" src="../assets/js/proms.js"></script>
+<script charset="utf-8" src="../assets/js/app.js"></script>
+<script>
+  const faixas = CREIC.proms.pediatria;
+  const atual = faixas[1];   // 3 aos 5 anos
+
+  document.getElementById('bateria-faixa').innerHTML = atual.instrumentos.map(i => `
+    <tr>
+      <td><strong>${i.sigla}</strong><br><span class="hint">${i.nome}</span></td>
+      <td style="font-size:.85rem;">${i.mede}<br><span class="hint">${i.porque}</span></td>
+      <td style="font-size:.85rem;">${i.quem}<br><span class="hint mono">${i.itens} itens</span></td>
+      <td style="font-size:.82rem; color:var(--ink-soft);">${i.momentos}</td>
+    </tr>`).join('');
+
+  document.getElementById('faixas').innerHTML = faixas.map((f, i) => `
+    <div class="card" style="${f === atual ? 'border-color:var(--wave); box-shadow:0 6px 20px rgba(14,140,149,.1);' : ''}">
+      <p class="eyebrow">${f === atual ? 'agora' : 'mais tarde'}</p>
+      <h3 style="font-size:1rem;">${f.faixa}</h3>
+      <p style="font-size:.84rem; color:var(--ink-soft); margin-bottom:10px;"><strong>Responde:</strong> ${f.quem}</p>
+      <p class="hint mono" style="margin:0;">${f.instrumentos.map(x => x.sigla).join(' · ')}</p>
+    </div>`).join('');
+</script>
+</body>
+</html>

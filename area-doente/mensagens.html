@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Mensagens — SoundBirth</title>
+<link rel="icon" type="image/png" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body class="page-tint" data-area="doente" data-pagina="mensagens.html">
+<div id="topbar"></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main-area">
+
+    <p class="eyebrow">Mensagens</p>
+    <h1 style="font-size:1.9rem;">Falar com a equipa, por escrito</h1>
+    <p style="color:var(--ink-soft); max-width:68ch;">
+      Este é o canal principal de contacto entre si e o CREIC. Respondemos em dias úteis, até
+      48 horas. Para situações urgentes — o processador deixou de funcionar, dor, febre ou
+      ferida inflamada — use o botão de contacto urgente.
+    </p>
+
+    <div class="banner-alert" style="margin:20px 0; max-width:70ch;">
+      <span aria-hidden="true">&#9888;</span>
+      <span><strong>Urgente?</strong> Escreva "URGENTE" no início da mensagem — chega ao
+      telemóvel de serviço da equipa. Fora do horário, dirija-se ao serviço de urgência e leve
+      o cartão do implante.</span>
+    </div>
+
+    <div class="card" style="max-width:760px;">
+      <div id="conversa"></div>
+      <hr class="divider">
+      <div class="field">
+        <label for="nova">A sua mensagem</label>
+        <textarea id="nova" rows="3" placeholder="Escreva aqui..."></textarea>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+        <button class="btn btn-wave" type="button" onclick="enviar()">Enviar</button>
+        <button class="btn btn-ghost btn-sm" type="button">Anexar foto</button>
+        <span class="hint">Uma foto da ferida ou do aparelho ajuda a equipa a responder melhor.</span>
+      </div>
+    </div>
+
+    <div class="card" style="max-width:760px; margin-top:24px;">
+      <p class="eyebrow">Como quero ser contactado</p>
+      <div class="field">
+        <label>Prefiro que falem comigo por</label>
+        <div class="chip-group">
+          <label class="chip"><input type="checkbox" checked><span>Mensagem nesta plataforma</span></label>
+          <label class="chip"><input type="checkbox" checked><span>SMS</span></label>
+          <label class="chip"><input type="checkbox"><span>Email</span></label>
+          <label class="chip"><input type="checkbox"><span>Videochamada com legendas</span></label>
+          <label class="chip"><input type="checkbox"><span>Videochamada em LGP</span></label>
+        </div>
+      </div>
+      <div class="banner-sign">
+        <span aria-hidden="true">&#9995;</span>
+        <span>A chamada telefónica está <strong>desativada</strong> no seu perfil, como pediu.
+        Nenhum serviço do CREIC lhe telefona sem ser em emergência clínica.</span>
+      </div>
+      <button class="btn btn-ghost" type="button" style="margin-top:16px;" onclick="this.textContent='Preferências guardadas'">Guardar preferências</button>
+    </div>
+
+  </main>
+</div>
+
+<script charset="utf-8" src="../assets/js/dados.js"></script>
+<script charset="utf-8" src="../assets/js/app.js"></script>
+<script>
+  function iniciais(nome){
+    return nome.split(' ').filter(p => p.length > 2).slice(0,2).map(p => p[0]).join('').toUpperCase();
+  }
+  function render(){
+    document.getElementById('conversa').innerHTML = CREIC.mensagens.map(m => `
+      <div class="msg ${m.de === 'eu' ? 'eu' : ''}">
+        <span class="av" aria-hidden="true">${m.de === 'eu' ? 'EU' : iniciais(m.quem)}</span>
+        <div class="bolha">
+          <p class="quem">${m.quem} · ${m.quando}</p>
+          <p>${m.texto}</p>
+        </div>
+      </div>`).join('');
+  }
+  function enviar(){
+    const t = document.getElementById('nova').value.trim();
+    if (!t) return;
+    CREIC.mensagens.push({ de:'eu', quem:'Eu', quando:'agora', texto:t });
+    document.getElementById('nova').value = '';
+    render();
+  }
+  render();
+</script>
+</body>
+</html>

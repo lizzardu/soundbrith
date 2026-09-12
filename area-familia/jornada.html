@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>A jornada da Laura — SoundBirth</title>
+<link rel="icon" type="image/png" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body class="page-tint" data-area="familia" data-pagina="jornada.html">
+<div id="topbar"></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main-area">
+
+    <p class="eyebrow">A jornada da Laura</p>
+    <h1 style="font-size:1.9rem;">Do rastreio na maternidade até aos 18 anos</h1>
+    <p style="color:var(--ink-soft); max-width:68ch;">
+      O percurso de uma criança não é o de um adulto mais pequeno. Começa antes de a Laura
+      ter um mês de vida, corre contra o tempo — o cérebro aprende a ouvir melhor quanto mais
+      cedo receber som — e continua pela creche e pela escola até ela poder decidir por si.
+    </p>
+
+    <div class="banner-sign" style="margin:20px 0 26px; max-width:70ch;">
+      <span aria-hidden="true">&#9200;</span>
+      <span><strong>A regra 1-3-6:</strong> rastreio auditivo até ao 1.º mês, diagnóstico até
+      aos 3 meses, intervenção começada até aos 6. A Laura cumpriu os três prazos.</span>
+    </div>
+
+    <div id="jornada-detalhe" style="max-width:860px;"></div>
+
+    <div class="card" style="max-width:860px; margin-top:8px; border-left:4px solid var(--sign);">
+      <p class="eyebrow" style="color:var(--sign);">Aos 18 anos</p>
+      <h2 style="font-size:1.15rem;">A conta passa a ser dela</h2>
+      <p style="font-size:.9rem; color:var(--ink-soft); margin:0;">
+        A partir dos 16 anos, a Laura começa a responder aos questionários por si e a preparar
+        a passagem para a área de adulto: saber explicar o seu diagnóstico, marcar consultas,
+        resolver uma avaria, pedir apoio na faculdade ou no trabalho. Quando fizer 18, o
+        acesso desta área passa para ela — e a vossa conta deixa de ver os dados clínicos,
+        salvo se ela quiser que continuem a ver.
+      </p>
+    </div>
+
+  </main>
+</div>
+
+<script charset="utf-8" src="../assets/js/dados.js"></script>
+<script charset="utf-8" src="../assets/js/dados-pediatria.js"></script>
+<script charset="utf-8" src="../assets/js/app.js"></script>
+<script>
+  const est = CREIC.crianca.estados, dat = CREIC.crianca.datas;
+  const marca = { feito:'&#10003;', ativo:'&#9679;', previsto:'' };
+
+  document.getElementById('jornada-detalhe').innerHTML = CREIC.jornadaPediatrica.map((f, i) => `
+    <section class="fase">
+      <div class="fase-head">
+        <span class="fase-num">${i+1}</span>
+        <h2>${f.fase}</h2>
+      </div>
+      <p style="font-size:.9rem; color:var(--ink-soft); margin:-4px 0 12px 44px;">${f.resumo}</p>
+      ${f.etapas.map(e => {
+        const s = est[e.id] || 'previsto';
+        const cls = s === 'feito' ? 'is-done' : (s === 'ativo' ? 'is-active' : '');
+        return `<article class="etapa ${cls}">
+          <span class="etapa-marca" aria-hidden="true">${marca[s]}</span>
+          <div class="etapa-corpo">
+            <h3 class="etapa-titulo">${e.titulo}</h3>
+            <div class="etapa-meta">
+              <span class="etapa-tag">${e.quem}</span>
+              <span class="etapa-tag">${e.prazo}</span>
+              ${dat[e.id] ? `<span class="pill ${s === 'feito' ? 'pill-ok' : 'pill-pending'}">${dat[e.id]}</span>` : ''}
+            </div>
+            <p>${e.nota}</p>
+          </div>
+        </article>`;
+      }).join('')}
+    </section>`).join('');
+</script>
+</body>
+</html>

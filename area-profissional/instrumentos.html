@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Questionários (PROMs) — SoundBirth · CREIC</title>
+<link rel="icon" type="image/png" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body class="page-tint" data-area="profissional" data-pagina="instrumentos.html">
+<div id="topbar"></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main-area">
+
+    <p class="eyebrow">Resultados reportados pelo doente</p>
+    <h1 style="font-size:1.8rem;">Que questionários usar, e com quem</h1>
+    <p style="color:var(--ink-soft); max-width:72ch;">
+      Proposta de bateria para discussão, não uma lista fechada. Três regras a orientaram:
+      <strong>núcleo curto</strong> (um específico de audição, um genérico de qualidade de
+      vida, um de satisfação — o resto é modular);
+      <strong>quem responde faz parte do dado</strong> (proxy até aos 6 anos, criança com
+      apoio dos 6 aos 12, o próprio a partir dos 13);
+      e <strong>acessível ou não conta</strong> (sem vídeo em LGP e linguagem clara, o
+      questionário mede literacia e não audição).
+    </p>
+
+    <!-- calendário -->
+    <div class="card card-flush table-scroll" style="margin-top:24px;">
+      <table>
+        <thead><tr><th>Momento</th><th>Adultos (≥ 18 anos)</th><th>Pediatria (0-17 anos)</th></tr></thead>
+        <tbody id="calendario"></tbody>
+      </table>
+    </div>
+
+    <!-- adultos -->
+    <h2 style="font-size:1.3rem; margin-top:34px;">Adultos — 18 anos ou mais</h2>
+    <p style="color:var(--ink-soft); max-width:70ch;">Responde sempre o próprio.</p>
+
+    <h3 style="font-size:1rem; margin-top:20px; color:var(--wave-deep);">Núcleo — para todos, em todos os marcos</h3>
+    <div id="adulto-nucleo" class="grid g-2" style="margin-top:12px;"></div>
+
+    <h3 style="font-size:1rem; margin-top:26px; color:var(--ink-soft);">Modular — conforme a fase e a queixa</h3>
+    <div id="adulto-modular" class="grid g-2" style="margin-top:12px;"></div>
+
+    <!-- pediatria -->
+    <h2 style="font-size:1.3rem; margin-top:38px;">Pediatria — 0 aos 17 anos</h2>
+    <p style="color:var(--ink-soft); max-width:72ch;">
+      A criança não é um adulto pequeno: abaixo dos 6 anos não tem competência para avaliar a
+      própria qualidade de vida, e o instrumento mede o que os pais observam. Misturar proxy e
+      autorreporte na mesma série torna a comparação inútil — por isso a mudança de
+      respondente fica registada no dado.
+    </p>
+    <div id="pediatria"></div>
+
+    <!-- observadas -->
+    <div class="card" style="margin-top:28px;">
+      <p class="eyebrow">A distinguir</p>
+      <h2 style="font-size:1.15rem;">Medidas observadas — não são PROMs</h2>
+      <p style="font-size:.9rem; color:var(--ink-soft); max-width:70ch;">
+        Entram no mesmo painel de resultados, mas quem as produz é a equipa ou o dispositivo.
+        Vale a pena mantê-las separadas: quando divergem do que o doente relata, é aí que
+        está a informação clínica mais útil.
+      </p>
+      <table id="observadas"></table>
+    </div>
+
+    <!-- avisos -->
+    <div class="card" style="margin-top:24px; border-left:4px solid var(--warn);">
+      <p class="eyebrow" style="color:var(--warn);">Antes de adotar</p>
+      <ul style="margin:0; padding-left:20px; font-size:.9rem; line-height:1.85; color:var(--ink-soft);">
+        <li><strong>Versão portuguesa e licença.</strong> O estado indicado em cada ficha é
+        indicativo e tem de ser confirmado caso a caso: alguns instrumentos exigem licença
+        (PedsQL), registo (EQ-5D, LittlEARS) ou autorização dos autores para tradução.</li>
+        <li><strong>Tradução não é validação.</strong> Um instrumento traduzido sem adaptação
+        cultural e sem estudo de propriedades psicométricas na população portuguesa não
+        produz pontuações comparáveis com a literatura.</li>
+        <li><strong>Carga de resposta.</strong> Cada instrumento acrescentado ao núcleo baixa a
+        taxa de resposta de todos os outros. A taxa atual do centro é de 74%.</li>
+        <li><strong>Acessibilidade.</strong> Vídeo em LGP por pergunta e versão em linguagem
+        clara não são opcionais nesta população — sem isso, os dados medem outra coisa.</li>
+      </ul>
+    </div>
+
+  </main>
+</div>
+
+<script charset="utf-8" src="../assets/js/dados.js"></script>
+<script charset="utf-8" src="../assets/js/proms.js"></script>
+<script charset="utf-8" src="../assets/js/app.js"></script>
+<script>
+  const P = CREIC.proms;
+
+  document.getElementById('calendario').innerHTML = P.momentos.map(m => `
+    <tr>
+      <td><strong>${m.quando}</strong></td>
+      <td style="font-size:.85rem;">${m.adulto}</td>
+      <td style="font-size:.85rem;">${m.pediatria}</td>
+    </tr>`).join('');
+
+  const ficha = (i, destaque) => `
+    <div class="card" style="${destaque ? 'border-color:var(--wave);' : ''}">
+      <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
+        <div>
+          <h3 style="font-size:1.02rem; margin-bottom:2px;">${i.sigla}</h3>
+          <p class="hint" style="margin:0;">${i.nome}</p>
+        </div>
+        <span class="pill pill-pending mono">${i.itens} itens · ${i.tempo || ''}</span>
+      </div>
+      <p style="font-size:.88rem; margin:12px 0 8px;"><strong>Mede:</strong> ${i.mede}</p>
+      <p style="font-size:.86rem; color:var(--ink-soft); margin:0 0 10px;">${i.porque}</p>
+      <p class="hint mono" style="margin:0;">${i.momentos}</p>
+      <p class="hint" style="margin:6px 0 0; color:${/validad|uso corrente|disponível/.test(i.estadoPT) ? 'var(--ok)' : 'var(--warn)'};">
+        PT: ${i.estadoPT}
+      </p>
+    </div>`;
+
+  document.getElementById('adulto-nucleo').innerHTML  = P.adulto.nucleo.map(i => ficha(i, true)).join('');
+  document.getElementById('adulto-modular').innerHTML = P.adulto.modular.map(i => ficha(i, false)).join('');
+
+  document.getElementById('pediatria').innerHTML = P.pediatria.map(f => `
+    <div class="card" style="margin-top:18px;">
+      <div style="display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap; align-items:baseline;">
+        <h3 style="font-size:1.15rem; margin:0;">${f.faixa}</h3>
+        <span class="pill pill-sign">responde: ${f.quem}</span>
+      </div>
+      <p class="hint" style="margin:6px 0 14px;">${f.idadeRef}</p>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Instrumento</th><th>O que mede e porquê</th><th>Itens</th><th>Quando</th><th>Versão PT</th></tr></thead>
+          <tbody>
+            ${f.instrumentos.map(i => `
+              <tr>
+                <td><strong>${i.sigla}</strong><br><span class="hint">${i.nome}</span></td>
+                <td style="font-size:.85rem;">${i.mede}<br><span class="hint">${i.porque}</span></td>
+                <td class="mono" style="font-size:.8rem;">${i.itens}<br><span class="hint">${i.quem}</span></td>
+                <td style="font-size:.82rem; color:var(--ink-soft);">${i.momentos}</td>
+                <td style="font-size:.8rem; color:${/validad|uso|disponível/.test(i.estadoPT) ? 'var(--ok)' : 'var(--warn)'};">${i.estadoPT}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('observadas').innerHTML = P.observadas.map(o => `
+    <tr><td><strong>${o.sigla}</strong><br><span class="hint">${o.nome}</span></td>
+        <td style="font-size:.86rem;">${o.mede}</td></tr>`).join('');
+</script>
+</body>
+</html>
