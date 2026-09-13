@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Novo doente — SoundBirth · CREIC</title>
+<link rel="icon" type="image/png" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body class="page-tint a-carregar" data-area="profissional" data-pagina="novo-doente.html">
+<div id="topbar"></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main-area">
+
+    <p class="eyebrow"><a href="dashboard.html" style="color:inherit;">Doentes</a> · novo</p>
+    <h1 style="font-size:1.8rem;">Registar doente e criar acesso</h1>
+    <p style="color:var(--ink-soft); max-width:70ch;">
+      A jornada é criada automaticamente com as etapas do grupo escolhido. O acesso do
+      utilizador pode ser criado já ou mais tarde, a partir da ficha.
+    </p>
+
+    <div id="resultado"></div>
+
+    <form id="form" onsubmit="submeter(event)" style="max-width:900px;">
+
+      <!-- 1. grupo -->
+      <div class="card" style="margin-top:20px;">
+        <div class="form-section"><div class="section-head"><span class="section-num">1</span><h2>Grupo da jornada</h2></div></div>
+        <div class="escolha-grupo" role="radiogroup" aria-label="Grupo da jornada">
+          <label>
+            <input type="radio" name="grupo" value="adulto" required onchange="mudouGrupo()">
+            <strong>Adulto</strong>
+            <span>Referenciação, prova de próteses, expectativas (CIQOL-Expectations), decisão partilhada,
+            cirurgia, programações, reabilitação e reavaliação do processador. O utilizador é o próprio.</span>
+          </label>
+          <label>
+            <input type="radio" name="grupo" value="pediatrico" required onchange="mudouGrupo()">
+            <strong>Pediátrico · 0 aos 18 anos</strong>
+            <span>Rastreio neonatal, intervenção precoce, estudo alargado, cirurgia, idade auditiva, creche e
+            escola, transição. O utilizador são os pais ou quem tem as responsabilidades parentais.</span>
+          </label>
+        </div>
+        <p class="hint" id="sugestao" style="margin:12px 0 0;"></p>
+      </div>
+
+      <!-- 2. identificação -->
+      <div class="card" style="margin-top:20px;">
+        <div class="form-section"><div class="section-head"><span class="section-num">2</span><h2>Identificação</h2></div></div>
+        <div class="form-grid">
+          <div class="field"><label for="nome">Nome completo</label><input type="text" id="nome" name="nome" required></div>
+          <div class="field"><label for="processo">N.º de processo</label><input type="text" id="processo" name="processo" required></div>
+          <div class="field"><label for="data_nascimento">Data de nascimento</label><input type="date" id="data_nascimento" name="data_nascimento" onchange="mudouGrupo()"></div>
+          <div class="field"><label for="sexo">Sexo</label>
+            <select id="sexo" name="sexo"><option value="">—</option><option value="F">Feminino</option><option value="M">Masculino</option><option value="outro">Outro</option></select></div>
+          <div class="field inteiro"><label for="etiologia">Diagnóstico / etiologia</label><input type="text" id="etiologia" name="etiologia" placeholder="ex.: Hipoacusia neurossensorial bilateral profunda, progressiva"></div>
+          <div class="field"><label for="data_referenciacao">Data de referenciação ao CREIC</label><input type="date" id="data_referenciacao" name="data_referenciacao"></div>
+          <div class="field"><label for="lado_implante">Implante</label>
+            <select id="lado_implante" name="lado_implante"><option value="nenhum">Ainda sem implante</option><option value="direito">Direito</option><option value="esquerdo">Esquerdo</option><option value="bilateral">Bilateral</option></select></div>
+          <div class="field"><label for="gestor_caso">Gestor(a) de caso</label><input type="text" id="gestor_caso" name="gestor_caso"></div>
+          <div class="field" id="campo-responsaveis" hidden><label for="responsaveis">Responsabilidades parentais</label><input type="text" id="responsaveis" name="responsaveis" placeholder="ex.: Marta Pinto (mãe) e Hugo Esteves (pai)"></div>
+        </div>
+      </div>
+
+      <!-- 3. comunicação -->
+      <div class="card" style="margin-top:20px; border-left:4px solid var(--sign);">
+        <div class="form-section"><div class="section-head"><span class="section-num">3</span><h2>Como comunicar com esta pessoa</h2></div></div>
+        <p class="hint" style="margin-top:-6px;">Aparece no topo da ficha e condiciona marcações e alertas.</p>
+        <div class="field">
+          <label>Canais preferidos</label>
+          <div class="chip-group">
+            <label class="chip"><input type="checkbox" name="canais" value="plataforma" checked><span>Mensagem na plataforma</span></label>
+            <label class="chip"><input type="checkbox" name="canais" value="sms"><span>SMS</span></label>
+            <label class="chip"><input type="checkbox" name="canais" value="email"><span>Email</span></label>
+            <label class="chip"><input type="checkbox" name="canais" value="video_legendado"><span>Videochamada legendada</span></label>
+            <label class="chip"><input type="checkbox" name="canais" value="video_lgp"><span>Videochamada em LGP</span></label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Na consulta e no contacto</label>
+          <div class="chip-group">
+            <label class="chip"><input type="checkbox" name="proibir_chamada" value="1" checked><span>Nunca telefonar</span></label>
+            <label class="chip"><input type="checkbox" name="usa_lgp" value="1"><span>Utiliza LGP</span></label>
+            <label class="chip"><input type="checkbox" name="precisa_interprete" value="1"><span>Precisa de intérprete</span></label>
+            <label class="chip"><input type="checkbox" name="leitura_labial" value="1"><span>Leitura labial eficaz</span></label>
+            <label class="chip"><input type="checkbox" name="linguagem_simples" value="1"><span>Linguagem simples</span></label>
+          </div>
+        </div>
+        <div class="field" style="margin:0;"><label for="notas_com">Notas</label><input type="text" id="notas_com" name="notas_com" placeholder="ex.: família bilingue; nunca telefonar em horário escolar"></div>
+      </div>
+
+      <!-- 4. acesso -->
+      <div class="card" style="margin-top:20px;">
+        <div class="form-section"><div class="section-head"><span class="section-num">4</span><h2>Acesso do utilizador <span class="hint">(opcional)</span></h2></div></div>
+        <p class="hint" style="margin-top:-6px;" id="nota-acesso">Gera um código de uso único ligado a este email. Pode criar outros acessos depois, na ficha.</p>
+        <div class="form-grid">
+          <div class="field"><label for="c_email">Email do titular da conta</label><input type="email" id="c_email" name="c_email"></div>
+          <div class="field"><label for="c_nome">Nome do titular</label><input type="text" id="c_nome" name="c_nome"></div>
+          <div class="field"><label for="c_relacao">Relação com o doente</label>
+            <select id="c_relacao" name="c_relacao">
+              <option value="proprio">O próprio</option><option value="mae">Mãe</option><option value="pai">Pai</option>
+              <option value="tutor">Tutor legal</option><option value="outro">Outro</option>
+            </select></div>
+        </div>
+      </div>
+
+      <div class="form-actions" style="padding:16px 0; background:transparent; border:none;">
+        <a class="btn btn-ghost" href="dashboard.html">Cancelar</a>
+        <button class="btn btn-primary" type="submit" id="btn">Registar doente</button>
+      </div>
+    </form>
+
+  </main>
+</div>
+
+<script charset="utf-8" src="../assets/js/vendor/supabase.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-config.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-client.js"></script>
+<script charset="utf-8" src="../assets/js/app.js"></script>
+<script>
+  function mudouGrupo() {
+    const f = document.getElementById('form');
+    const grupo = (f.querySelector('input[name=grupo]:checked') || {}).value;
+    const nasc = f.data_nascimento.value;
+    const idade = nasc ? mesesEntre(nasc) / 12 : null;
+
+    document.getElementById('campo-responsaveis').hidden = grupo !== 'pediatrico';
+    f.c_relacao.value = grupo === 'pediatrico' ? (f.c_relacao.value === 'proprio' ? 'mae' : f.c_relacao.value) : 'proprio';
+    document.getElementById('nota-acesso').textContent = grupo === 'pediatrico'
+      ? 'Numa criança, a conta é de um dos responsáveis. Cada responsável deve ter a sua; crie as restantes na ficha.'
+      : 'Gera um código de uso único ligado a este email. Pode criar outros acessos depois, na ficha.';
+
+    const sug = document.getElementById('sugestao');
+    if (idade == null) { sug.textContent = ''; return; }
+    if (idade < 18 && grupo === 'adulto') sug.innerHTML = '&#9888; Tem ' + Math.floor(idade) + ' anos: confirme que deve seguir a jornada de adulto.';
+    else if (idade >= 18 && grupo === 'pediatrico') sug.innerHTML = '&#9888; Tem ' + Math.floor(idade) + ' anos: confirme que deve seguir a jornada pediátrica.';
+    else sug.textContent = '';
+  }
+
+  async function submeter(ev) {
+    ev.preventDefault();
+    const f = ev.target, btn = document.getElementById('btn'), res = document.getElementById('resultado');
+    const grupo = f.querySelector('input[name=grupo]:checked').value;
+    btn.disabled = true; btn.textContent = 'A registar…';
+    res.innerHTML = '';
+
+    try {
+      const dados = {
+        nome: valorForm(f, 'nome'), processo: valorForm(f, 'processo'), grupo,
+        data_nascimento: valorForm(f, 'data_nascimento'), sexo: valorForm(f, 'sexo'),
+        etiologia: valorForm(f, 'etiologia'), data_referenciacao: valorForm(f, 'data_referenciacao'),
+        lado_implante: valorForm(f, 'lado_implante') || 'nenhum', gestor_caso: valorForm(f, 'gestor_caso'),
+        responsaveis: grupo === 'pediatrico' ? valorForm(f, 'responsaveis') : null
+      };
+      const prefs = {
+        canais: marcados(f, 'canais'),
+        canais_proibidos: f.proibir_chamada.checked ? ['chamada_telefonica'] : [],
+        usa_lgp: f.usa_lgp.checked, precisa_interprete: f.precisa_interprete.checked,
+        leitura_labial: f.leitura_labial.checked, linguagem_simples: f.linguagem_simples.checked,
+        notas: valorForm(f, 'notas_com')
+      };
+      const d = await creicApi.criarDoente(dados, prefs);
+
+      let blocoCodigo = '';
+      const email = valorForm(f, 'c_email');
+      if (email) {
+        const nomeTitular = valorForm(f, 'c_nome') || (f.c_relacao.value === 'proprio' ? d.nome : 'Responsável');
+        let codigo;
+        try {
+          codigo = await creicApi.criarConvite(d.id, email, nomeTitular, f.c_relacao.value);
+        } catch (e) {
+          // o doente já existe: o convite pode ser refeito na ficha, sem voltar a registar
+          codigo = null;
+          blocoCodigo = '<div style="margin-top:12px;">' + erroHTML('O doente foi registado, mas o acesso não foi criado: ' + e.message + ' Crie-o na ficha.') + '</div>';
+        }
+        if (codigo) blocoCodigo = `
+          <p style="margin:14px 0 4px;"><strong>Código de acesso para ${esc(email)}</strong></p>
+          <div class="codigo-convite">${esc(codigo)}</div>
+          <p class="hint">Mostrado só agora: na base de dados fica apenas cifrado. Entregue-o à pessoa por escrito —
+          em mão, na consulta, ou pelo canal preferido registado. Válido 7 dias. A pessoa ativa a conta em
+          <strong>Ativar conta</strong>, na página inicial, com este mesmo email.</p>`;
+      }
+
+      f.hidden = true;
+      res.innerHTML = `
+        <div class="card" style="margin-top:20px; border-color:var(--wave); max-width:900px;">
+          <p class="eyebrow">Doente registado</p>
+          <h2 style="font-size:1.3rem;">${esc(d.nome)} <span class="pill ${grupo === 'pediatrico' ? 'pill-sign' : 'pill-wave'}">${ROTULOS.grupo[grupo]}</span></h2>
+          <p style="color:var(--ink-soft);">A jornada ${grupo === 'pediatrico' ? 'pediátrica' : 'de adulto'} foi criada, com a primeira etapa em curso.</p>
+          ${blocoCodigo}
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;">
+            <a class="btn btn-primary" href="doente.html?id=${d.id}">Abrir a ficha</a>
+            <a class="btn btn-ghost" href="novo-doente.html">Registar outro doente</a>
+          </div>
+        </div>`;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (e) {
+      res.innerHTML = '<div style="margin-top:16px;">' + erroHTML(e) + '</div>';
+      btn.disabled = false; btn.textContent = 'Registar doente';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  iniciarPagina();
+</script>
+</body>
+</html>

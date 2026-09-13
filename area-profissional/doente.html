@@ -8,161 +8,25 @@
 <link rel="icon" type="image/png" href="../assets/img/favicon.png">
 <link rel="stylesheet" href="../assets/css/styles.css">
 </head>
-<body class="page-tint" data-area="profissional" data-pagina="doente.html">
+<body class="page-tint a-carregar" data-area="profissional" data-pagina="doente.html">
 <div id="topbar"></div>
 
 <div class="app-shell">
   <aside class="sidebar" id="sidebar"></aside>
   <main class="main-area">
-
     <p class="eyebrow"><a href="dashboard.html" style="color:inherit;">Doentes</a> · ficha</p>
-    <div style="display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; align-items:flex-end;">
-      <div>
-        <h1 style="font-size:1.8rem; margin-bottom:4px;">Manuel Torres Ribeiro</h1>
-        <p class="mono hint" style="margin:0;">CREIC-0142 · 61 anos · implante à direita desde 09 Jul 2026</p>
-      </div>
-      <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <button class="btn btn-ghost btn-sm" type="button">Registar consulta</button>
-        <button class="btn btn-primary btn-sm" type="button">Exportar resumo em PDF</button>
-      </div>
-    </div>
-
-    <!-- preferências de comunicação: primeiro bloco da ficha, de propósito -->
-    <div class="card" style="margin-top:22px; border-left:4px solid var(--sign);">
-      <p class="eyebrow" style="color:var(--sign);">Antes de contactar este doente</p>
-      <div class="grid g-3" style="gap:18px;">
-        <div>
-          <strong style="font-size:.9rem;">Canal preferido</strong>
-          <p style="font-size:.88rem; color:var(--ink-soft); margin:4px 0 0;">Mensagem escrita na plataforma + SMS</p>
-        </div>
-        <div>
-          <strong style="font-size:.9rem; color:var(--alert);">Nunca usar</strong>
-          <p style="font-size:.88rem; color:var(--ink-soft); margin:4px 0 0;">Chamada telefónica</p>
-        </div>
-        <div>
-          <strong style="font-size:.9rem;">Na consulta</strong>
-          <p style="font-size:.88rem; color:var(--ink-soft); margin:4px 0 0;">
-            Leitura labial eficaz · sem necessidade de intérprete · acompanhado pela filha
-          </p>
-        </div>
-      </div>
-      <p class="hint" style="margin:14px 0 0;">
-        Frases curtas, de frente, sem tapar a boca. Confirmar por escrito o que ficou combinado.
-      </p>
-    </div>
-
-    <!-- jornada -->
-    <div class="card" style="margin-top:22px;">
-      <p class="eyebrow">Percurso</p>
-      <div class="onda onda-light" id="onda-prof"></div>
-      <div class="grid g-4" style="margin-top:8px; gap:14px;">
-        <div><span class="hint">Referenciação</span><br><strong class="mono" style="font-size:.9rem;">12 Set 2024</strong></div>
-        <div><span class="hint">Decisão MD</span><br><strong class="mono" style="font-size:.9rem;">21 Mai 2025</strong></div>
-        <div><span class="hint">Cirurgia</span><br><strong class="mono" style="font-size:.9rem;">09 Jul 2026</strong></div>
-        <div><span class="hint">Referenciação → cirurgia</span><br><strong class="mono" style="font-size:.9rem; color:var(--warn);">21,9 meses</strong></div>
-      </div>
-    </div>
-
-    <div class="grid g-2" style="margin-top:22px; align-items:start;">
-
-      <!-- audiologia -->
-      <div class="card">
-        <p class="eyebrow">Audiologia</p>
-        <h2 style="font-size:1.15rem;">Campo livre — antes e depois</h2>
-        <div id="audiograma"></div>
-        <hr class="divider">
-        <table>
-          <thead><tr><th>Marco</th><th>Silêncio</th><th>Ruído (+10 dB S/R)</th></tr></thead>
-          <tbody id="tabela-disc"></tbody>
-        </table>
-        <p class="hint" style="margin-top:10px;">Monossílabos em lista aberta, sem pistas visuais.</p>
-      </div>
-
-      <!-- uso e reabilitação -->
-      <div>
-        <div class="card">
-          <p class="eyebrow">Datalogging</p>
-          <h2 style="font-size:1.15rem;">Uso diário do processador</h2>
-          <div id="grafico-uso"></div>
-          <p class="hint" style="margin-top:8px;">
-            Média das últimas 2 semanas: <strong class="mono">8,6 h/dia</strong> · sem
-            períodos longos sem uso. Tendência favorável.
-          </p>
-        </div>
-
-        <div class="card" style="margin-top:20px;">
-          <p class="eyebrow">Reabilitação</p>
-          <h2 style="font-size:1.15rem;">Adesão ao treino em casa</h2>
-          <div id="lista-exerc"></div>
-          <p class="hint" style="margin-top:6px;">Sessão 12 de terapia da fala a 01 Out.</p>
-        </div>
-
-        <div class="card" style="margin-top:20px;">
-          <p class="eyebrow">PROMs</p>
-          <table>
-            <tbody id="tabela-proms"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- registo clínico -->
-    <div class="card" style="margin-top:22px;">
-      <p class="eyebrow">Registo da programação</p>
-      <h2 style="font-size:1.15rem;">MAP de 24 Set 2026 (a preencher)</h2>
-      <div class="grid g-2" style="gap:16px 26px;">
-        <div class="field" style="margin:0;">
-          <label for="mapa">Estratégia e mapa</label>
-          <input type="text" id="mapa" placeholder="ex.: FS4, 12 canais ativos">
-        </div>
-        <div class="field" style="margin:0;">
-          <label for="impedancias">Impedâncias</label>
-          <input type="text" id="impedancias" placeholder="ex.: todas em valores normais">
-        </div>
-        <div class="field" style="margin:0;">
-          <label for="queixas">Queixas desde a última sessão</label>
-          <input type="text" id="queixas" value="Apito ocasional ao colocar de manhã (íman)">
-        </div>
-        <div class="field" style="margin:0;">
-          <label for="plano">Plano até à próxima</label>
-          <input type="text" id="plano" placeholder="ex.: manter treino diário; reavaliar aos 3 meses">
-        </div>
-      </div>
-      <button class="btn btn-primary" type="button" style="margin-top:18px;" onclick="this.textContent='Registo guardado'">Guardar registo</button>
-    </div>
-
+    <div id="cabecalho"><p class="hint">A carregar…</p></div>
+    <div id="comunicacao"></div>
+    <div id="alertas-doente"></div>
+    <nav class="tabs-ficha" id="tabs" role="tablist"></nav>
+    <div id="painel"></div>
   </main>
 </div>
 
-<script charset="utf-8" src="../assets/js/dados.js"></script>
+<script charset="utf-8" src="../assets/js/vendor/supabase.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-config.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-client.js"></script>
 <script charset="utf-8" src="../assets/js/app.js"></script>
-<script>
-  desenharOnda('onda-prof', CREIC.jornadaModelo, CREIC.doente.estados, CREIC.doente.etapaAtual);
-  desenharAudiograma('audiograma', CREIC.audiograma);
-  desenharBarras('grafico-uso', CREIC.usoDiario, CREIC.usoDiario.map((_, i) => 'S' + (i+1)),
-    { max:12, unidade:' h', alvo:10, alvoTxt:'meta 10 h', descricao:'Uso diario do processador por semana' });
-
-  document.getElementById('tabela-disc').innerHTML = CREIC.discriminacao.map(d => `
-    <tr><td>${d.marco}</td><td class="mono">${d.silencio}%</td><td class="mono">${d.ruido}%</td></tr>`).join('')
-    + `<tr><td class="hint">3 meses</td><td colspan="2" class="hint">a realizar em 12 Nov 2026</td></tr>`;
-
-  document.getElementById('lista-exerc').innerHTML = CREIC.exercicios.map(e => {
-    const pct = Math.round(e.feito / e.alvo * 100);
-    return `<div style="margin-bottom:12px;">
-      <div style="display:flex; justify-content:space-between; gap:12px; font-size:.85rem;">
-        <span>${e.titulo}</span><span class="mono hint">${e.feito}/${e.alvo}</span>
-      </div>
-      <div class="bar ${pct >= 100 ? '' : (pct >= 60 ? 'b-warn' : 'b-alert')}" style="max-width:none;">
-        <span style="width:${Math.min(pct,100)}%"></span>
-      </div>
-    </div>`;
-  }).join('');
-
-  document.getElementById('tabela-proms').innerHTML = CREIC.questionarios.map(q => `
-    <tr>
-      <td><strong>${q.nome}</strong><br><span class="hint">${q.quando}</span></td>
-      <td style="text-align:right;"><span class="pill ${q.estado === 'respondido' ? 'pill-ok' : 'pill-warn'}">${q.estado}</span></td>
-    </tr>`).join('');
-</script>
+<script charset="utf-8" src="../assets/js/ficha-doente.js"></script>
 </body>
 </html>

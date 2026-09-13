@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" href="../assets/img/favicon.png">
 <link rel="stylesheet" href="../assets/css/styles.css">
 </head>
-<body class="page-tint" data-area="profissional" data-pagina="dashboard.html">
+<body class="page-tint a-carregar" data-area="profissional" data-pagina="dashboard.html">
 <div id="topbar"></div>
 
 <div class="app-shell">
@@ -18,78 +18,123 @@
     <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap; margin-bottom:22px;">
       <div>
         <p class="eyebrow">CREIC · Implante coclear</p>
-        <h1 style="font-size:1.8rem;">Doentes em percurso</h1>
+        <h1 style="font-size:1.8rem; margin:0;">Doentes em percurso</h1>
       </div>
-      <a class="btn btn-primary" href="#">Registar nova referenciação</a>
+      <a class="btn btn-primary" href="novo-doente.html">&#10133; Novo doente</a>
     </div>
 
-    <div class="grid g-4" style="margin-bottom:26px;">
-      <div class="card stat"><div class="num" id="s-total">—</div><div class="lbl">Em seguimento ativo</div></div>
-      <div class="card stat"><div class="num" id="s-estudo">—</div><div class="lbl">Candidaturas em estudo</div></div>
-      <div class="card stat"><div class="num" id="s-lista">—</div><div class="lbl">Em lista cirúrgica</div></div>
-      <div class="card stat"><div class="num" id="s-alertas" style="color:var(--alert);">—</div><div class="lbl">Alertas por tratar</div></div>
+    <div class="grid g-4" style="margin-bottom:22px;">
+      <div class="card stat"><div class="num" id="s-ativos">—</div><div class="lbl">Em seguimento ativo</div></div>
+      <div class="card stat"><div class="num" id="s-adulto">—</div><div class="lbl">Grupo adulto</div></div>
+      <div class="card stat"><div class="num" id="s-ped">—</div><div class="lbl">Grupo pediátrico</div></div>
+      <div class="card stat"><a href="alertas.html" style="text-decoration:none;"><div class="num" id="s-alertas" style="color:var(--alert);">—</div><div class="lbl">Alertas por tratar</div></a></div>
     </div>
 
-    <div class="card" style="margin-bottom:20px; padding:18px 22px;">
-      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-        <span class="hint" style="font-weight:600;">Filtrar por fase:</span>
-        <div class="chip-group" id="filtros"></div>
+    <div class="card" style="margin-bottom:18px; padding:16px 20px;">
+      <div class="form-grid" style="grid-template-columns:2fr 1fr 1fr;">
+        <div class="field">
+          <label for="f-texto">Procurar</label>
+          <input type="text" id="f-texto" placeholder="Nome ou número de processo" oninput="pintar()">
+        </div>
+        <div class="field">
+          <label for="f-grupo">Grupo</label>
+          <select id="f-grupo" onchange="pintar()">
+            <option value="">Todos</option>
+            <option value="adulto">Adulto</option>
+            <option value="pediatrico">Pediátrico</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f-estado">Estado</label>
+          <select id="f-estado" onchange="pintar()">
+            <option value="ativo">Em seguimento</option>
+            <option value="">Todos</option>
+            <option value="alta">Alta</option>
+            <option value="abandono">Abandono</option>
+            <option value="transferido">Transferido</option>
+          </select>
+        </div>
       </div>
     </div>
 
     <div class="card card-flush table-scroll">
       <table>
         <thead>
-          <tr><th>Doente</th><th>Fase / etapa atual</th><th>No percurso desde</th><th>Uso diário</th><th>Próximo passo</th><th></th></tr>
+          <tr><th>Doente</th><th>Fase / etapa em curso</th><th>Percurso</th><th>Uso diário</th><th>Próxima marcação</th><th>Pendente</th></tr>
         </thead>
-        <tbody id="linhas"></tbody>
+        <tbody id="linhas"><tr><td colspan="6" class="hint">A carregar…</td></tr></tbody>
       </table>
     </div>
     <p class="hint" style="margin-top:12px;">
-      A coluna <strong>uso diário</strong> vem do datalogging do processador, lido na última
-      programação. Abaixo de 6&nbsp;h/dia no primeiro ano gera alerta automático.
+      Uso diário: última leitura do datalogging registada numa programação. Abaixo de 6&nbsp;h/dia no
+      primeiro ano gera alerta.
     </p>
 
   </main>
 </div>
 
-<script charset="utf-8" src="../assets/js/dados.js"></script>
+<script charset="utf-8" src="../assets/js/vendor/supabase.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-config.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-client.js"></script>
 <script charset="utf-8" src="../assets/js/app.js"></script>
 <script>
-  const ind = CREIC.indicadores;
-  const porId = id => document.getElementById(id);
-  porId('s-total').textContent   = ind.emSeguimento;
-  porId('s-estudo').textContent  = ind.candidaturasEmEstudo;
-  porId('s-lista').textContent   = ind.listaCirurgica;
-  porId('s-alertas').textContent = CREIC.alertas.filter(a => a.nivel !== 'info').length;
+  let DOENTES = [];
 
-  const fases = ['Todas', ...new Set(CREIC.listaDoentes.map(d => d.fase))];
-  document.getElementById('filtros').innerHTML = fases.map((f, i) =>
-    `<label class="chip"><input type="radio" name="fase" value="${f}" ${i === 0 ? 'checked' : ''}
-      onchange="pintar(this.value)"><span>${f}</span></label>`).join('');
+  function pintar() {
+    const t = document.getElementById('f-texto').value.trim().toLowerCase();
+    const g = document.getElementById('f-grupo').value;
+    const e = document.getElementById('f-estado').value;
+    const lista = DOENTES.filter(d =>
+      (!g || d.grupo === g) && (!e || d.estado === e) &&
+      (!t || d.nome.toLowerCase().includes(t) || d.processo.toLowerCase().includes(t)));
 
-  const risco = { ok:'pill-ok', atraso:'pill-warn', alerta:'pill-alert' };
-  const rotulo = { ok:'a decorrer', atraso:'parado', alerta:'atenção' };
-
-  function pintar(fase){
-    const lista = CREIC.listaDoentes.filter(d => !fase || fase === 'Todas' || d.fase === fase);
-    document.getElementById('linhas').innerHTML = lista.map(d => `
-      <tr class="row-link" onclick="location.href='doente.html'">
+    const tbody = document.getElementById('linhas');
+    if (!lista.length) {
+      tbody.innerHTML = `<tr><td colspan="6" class="hint" style="padding:20px;">${DOENTES.length
+        ? 'Nenhum doente com estes filtros.'
+        : 'Ainda não há doentes registados. <a href="novo-doente.html">Registar o primeiro</a>.'}</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = lista.map(d => {
+      const pct = d.etapas_total ? Math.round(d.etapas_feitas / d.etapas_total * 100) : 0;
+      return `<tr class="row-link" onclick="location.href='doente.html?id=${d.doente_id}'">
         <td>
-          <strong>${d.nome}</strong>
-          ${d.lgp ? '<span class="pill pill-sign" style="margin-left:6px;">LGP</span>' : ''}
-          <br><span class="mono hint">${d.processo} · ${d.idade} ${d.idade === 1 ? 'ano' : 'anos'} · ${d.tipo}</span>
+          <a href="doente.html?id=${d.doente_id}" style="font-weight:600; color:var(--deep); text-decoration:none;">${esc(d.nome)}</a>
+          <span class="pill ${d.grupo === 'pediatrico' ? 'pill-sign' : 'pill-wave'}" style="margin-left:6px;">${ROTULOS.grupo[d.grupo]}</span>
+          ${d.usa_lgp || d.precisa_interprete ? '<span class="pill pill-sign" style="margin-left:4px;">LGP</span>' : ''}
+          <br><span class="mono hint">${esc(d.processo)} · ${idadeTexto(d.data_nascimento)}${d.estado !== 'ativo' ? ' · ' + esc(d.estado) : ''}</span>
         </td>
-        <td>${d.fase}<br><span class="hint">${d.etapa}</span></td>
-        <td class="mono hint">${d.desde}</td>
-        <td>${d.uso == null ? '<span class="hint">—</span>'
-            : `<span class="mono">${num(d.uso.toFixed(1))} h</span>
-               <div class="bar ${d.uso < 6 ? 'b-alert' : ''}" style="max-width:70px;"><span style="width:${Math.min(d.uso/12*100,100)}%"></span></div>`}</td>
-        <td style="font-size:.85rem;">${d.proximo}</td>
-        <td><span class="pill ${risco[d.risco]}">${rotulo[d.risco]}</span></td>
-      </tr>`).join('');
+        <td>${d.fase ? esc(d.fase_curta) + '<br><span class="hint">' + esc(d.etapa_titulo) + '</span>' : '<span class="hint">sem etapa em curso</span>'}</td>
+        <td style="min-width:110px;"><div class="bar"><span style="width:${pct}%"></span></div>
+          <span class="hint mono">${d.etapas_feitas}/${d.etapas_total}</span></td>
+        <td>${d.uso_h == null ? '<span class="hint">—</span>'
+          : `<span class="mono">${num(d.uso_h)} h</span><div class="bar ${d.uso_h < 6 ? 'b-alert' : ''}" style="max-width:70px;"><span style="width:${Math.min(d.uso_h / 12 * 100, 100)}%"></span></div>`}</td>
+        <td style="font-size:.84rem;">${d.proxima_marcacao ? fmtDataHora(d.proxima_marcacao) : '<span class="hint">—</span>'}</td>
+        <td style="white-space:nowrap;">
+          ${d.proms_pendentes ? `<span class="pill pill-warn" title="Questionários por responder">&#128221; ${d.proms_pendentes}</span>` : ''}
+          ${d.mensagens_por_ler ? `<span class="pill pill-alert" title="Mensagens por ler">&#128172; ${d.mensagens_por_ler}</span>` : ''}
+          ${!d.contas_ativas ? '<span class="pill pill-pending" title="Ainda sem conta de utilizador ativada">sem acesso</span>' : ''}
+        </td>
+      </tr>`;
+    }).join('');
   }
-  pintar('Todas');
+
+  (async function () {
+    const s = await iniciarPagina();
+    if (!s) return;
+    try {
+      const [doentes, alertas] = await Promise.all([creicApi.listarDoentes(), creicApi.listarAlertas()]);
+      DOENTES = doentes;
+      const ativos = doentes.filter(d => d.estado === 'ativo');
+      document.getElementById('s-ativos').textContent = ativos.length;
+      document.getElementById('s-adulto').textContent = ativos.filter(d => d.grupo === 'adulto').length;
+      document.getElementById('s-ped').textContent = ativos.filter(d => d.grupo === 'pediatrico').length;
+      document.getElementById('s-alertas').textContent = alertas.length;
+      pintar();
+    } catch (e) {
+      document.getElementById('linhas').innerHTML = `<tr><td colspan="6">${erroHTML(e)}</td></tr>`;
+    }
+  })();
 </script>
 </body>
 </html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Ativar conta — SoundBirth</title>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="page-tint">
+<div id="topbar"></div>
+
+<main class="wrap-narrow" style="padding-top:44px; padding-bottom:60px;">
+  <p class="eyebrow">Primeiro acesso</p>
+  <h1 style="font-size:2rem; color:var(--deep);">Ativar a sua conta</h1>
+  <p style="color:var(--ink-soft); max-width:62ch;">
+    A equipa do CREIC deu-lhe um <strong>código de 8 caracteres</strong> e registou o seu email.
+    Use esse mesmo email, escolha uma palavra-passe e introduza o código. Só é preciso fazer isto
+    uma vez — a partir daí entra com o email e a palavra-passe.
+  </p>
+
+  <div class="card" style="margin-top:22px;">
+    <form id="form-ativar" onsubmit="ativar(event)">
+      <div class="banner-alert" id="erro" hidden style="margin-bottom:18px;"></div>
+
+      <div class="field">
+        <label for="email">Email (o que deu à equipa)</label>
+        <input type="email" id="email" name="email" autocomplete="username" required>
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label for="pass">Palavra-passe</label>
+          <input type="password" id="pass" name="pass" minlength="8" autocomplete="new-password" required>
+          <p class="hint" style="margin-top:6px;">Pelo menos 8 caracteres.</p>
+        </div>
+        <div class="field">
+          <label for="pass2">Repetir palavra-passe</label>
+          <input type="password" id="pass2" name="pass2" minlength="8" autocomplete="new-password" required>
+        </div>
+      </div>
+      <div class="field" style="margin-top:18px;">
+        <label for="codigo">Código de acesso</label>
+        <input type="text" id="codigo" name="codigo" maxlength="8" autocomplete="one-time-code"
+               style="font-family:var(--f-mono); letter-spacing:.2em; text-transform:uppercase; font-size:1.2rem;"
+               placeholder="ex.: K7M2QP9X" required>
+        <p class="hint" style="margin-top:6px;">Válido durante 7 dias e só uma vez. Se expirou, peça um novo à equipa por escrito.</p>
+      </div>
+      <button class="btn btn-wave btn-block" type="submit" id="btn">Ativar e entrar</button>
+    </form>
+  </div>
+
+  <div class="banner-info" style="margin-top:20px;">
+    <span aria-hidden="true">&#128274;</span>
+    <span>O código está ligado ao seu email: não funciona com outro endereço. Numa criança, cada
+    responsável pode ter a sua própria conta — peça um código para cada um.</span>
+  </div>
+</main>
+
+<script charset="utf-8" src="assets/js/vendor/supabase.js"></script>
+<script charset="utf-8" src="assets/js/supabase-config.js"></script>
+<script charset="utf-8" src="assets/js/supabase-client.js"></script>
+<script charset="utf-8" src="assets/js/app.js"></script>
+<script>
+  async function ativar(ev) {
+    ev.preventDefault();
+    const f = ev.target, erro = document.getElementById('erro'), btn = document.getElementById('btn');
+    erro.hidden = true;
+    try {
+      if (f.pass.value !== f.pass2.value) throw new Error('As duas palavras-passe não coincidem.');
+      btn.disabled = true; btn.textContent = 'A ativar…';
+      const ctx = await creicApi.ativarConta(f.email.value, f.pass.value, f.codigo.value);
+      aviso('Conta ativada. Bem-vindo(a).');
+      location.href = creicApi.destino(ctx);
+    } catch (e) {
+      erro.innerHTML = '<span aria-hidden="true">&#9888;</span><span>' + esc(e.message) + '</span>';
+      erro.hidden = false;
+      btn.disabled = false; btn.textContent = 'Ativar e entrar';
+    }
+  }
+
+  (async function () {
+    if (!creicApi.configurado) {
+      document.getElementById('erro').innerHTML = '<span>&#9888;</span><span>A plataforma ainda não está ligada à base de dados.</span>';
+      document.getElementById('erro').hidden = false;
+      document.getElementById('btn').disabled = true;
+      return;
+    }
+    // quem entrou mas ainda não ativou chega aqui com o email já conhecido
+    const s = await creicApi.sessao().catch(() => null);
+    if (s && s.papel) { location.replace(creicApi.destino(s)); return; }
+    if (s && s.email) document.getElementById('email').value = s.email;
+  })();
+</script>
+</body>
+</html>

@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" href="../assets/img/favicon.png">
 <link rel="stylesheet" href="../assets/css/styles.css">
 </head>
-<body class="page-tint" data-area="profissional" data-pagina="alertas.html">
+<body class="page-tint a-carregar" data-area="profissional" data-pagina="alertas.html">
 <div id="topbar"></div>
 
 <div class="app-shell">
@@ -17,59 +17,99 @@
 
     <p class="eyebrow">Alertas</p>
     <h1 style="font-size:1.8rem;">O que não pode esperar pela próxima reunião</h1>
-    <p style="color:var(--ink-soft); max-width:70ch;">
-      A plataforma gera estes alertas sozinha, a partir de regras acordadas pela equipa:
-      percursos parados, uso baixo do processador, questionários sem resposta e critérios de
-      prioridade não cumpridos. Cada alerta aponta para uma ação concreta.
+    <p style="color:var(--ink-soft); max-width:72ch;">
+      Calculados pela base de dados a partir das regras abaixo, sempre que a página abre.
+      Um alerta sai da lista quando é marcado como tratado — ou quando deixa de se verificar
+      (a etapa avançou, a mensagem foi lida, o intérprete foi garantido).
     </p>
 
-    <div id="lista-alertas" style="margin-top:24px; max-width:900px;"></div>
+    <div class="card" style="padding:14px 20px; margin:18px 0;">
+      <div class="chip-group" id="filtros"></div>
+    </div>
 
-    <div class="card" style="max-width:900px; margin-top:8px;">
+    <div id="lista" style="max-width:960px;"><p class="hint">A carregar…</p></div>
+
+    <div class="card" style="max-width:960px; margin-top:24px;">
       <p class="eyebrow">Regras ativas</p>
-      <table>
-        <thead><tr><th>Regra</th><th>Condição</th><th>Nível</th></tr></thead>
+      <div class="table-scroll"><table>
+        <thead><tr><th>Regra</th><th>Condição</th><th>Porquê</th></tr></thead>
         <tbody>
-          <tr><td>Uso insuficiente do processador</td><td>Média &lt; 6 h/dia durante 3 semanas, no primeiro ano</td><td><span class="pill pill-alert">alerta</span></td></tr>
-          <tr><td>Candidatura parada</td><td>Etapa sem progresso há mais de 90 dias</td><td><span class="pill pill-alert">alerta</span></td></tr>
-          <tr><td>Prova de próteses sem reavaliação</td><td>Fim da prova há mais de 60 dias sem campo livre</td><td><span class="pill pill-alert">alerta</span></td></tr>
-          <tr><td>Consulta sem intérprete atribuído</td><td>Doente utilizador de LGP com consulta a menos de 7 dias</td><td><span class="pill pill-warn">aviso</span></td></tr>
-          <tr><td>PROM por responder</td><td>Questionário enviado há mais de 7 dias sem resposta</td><td><span class="pill pill-warn">aviso</span></td></tr>
-          <tr><td>Prioridade pediátrica</td><td>Criança &lt; 18 meses em lista cirúrgica há mais de 30 dias</td><td><span class="pill pill-pending">informação</span></td></tr>
-          <tr><td>Queda de desempenho</td><td>Discriminação vocal desce mais de 15 pontos entre avaliações</td><td><span class="pill pill-alert">alerta</span></td></tr>
+          <tr><td><strong>Etapa parada</strong></td><td>Etapa em curso há mais tempo do que o prazo de referência</td><td class="hint">Na idade ativa, implantar mais cedo aumenta o benefício líquido (Neve et al., 2021).</td></tr>
+          <tr><td><strong>Uso baixo do processador</strong></td><td>Última leitura &lt; 6 h/dia, no primeiro ano após a ativação</td><td class="hint">Mais horas de uso associam-se a melhor perceção da fala no primeiro ano.</td></tr>
+          <tr><td><strong>Expectativas acima do típico</strong></td><td>Domínio do CIQOL-Expectations acima da média + 1 DP de utilizadores experientes</td><td class="hint">Expectativas são modificáveis e devem ser discutidas antes da decisão (McRackan et al., 2022).</td></tr>
+          <tr><td><strong>Sem intérprete garantido</strong></td><td>Utilizador de LGP com consulta nos próximos 7 dias sem apoio garantido</td><td class="hint">Sem intérprete, a consulta não é acessível.</td></tr>
+          <tr><td><strong>Pedido de consulta</strong></td><td>Pedido feito pelo próprio utilizador</td><td class="hint">Marcação iniciada pelo doente — um dos modelos de cuidados menos estudados (Ebrahimi-Madiseh et al., 2023).</td></tr>
+          <tr><td><strong>Mensagem urgente</strong></td><td>Mensagem marcada como urgente ainda por ler</td><td class="hint">O canal escrito substitui o telefone: tem de ter resposta rápida.</td></tr>
+          <tr><td><strong>Questionário por responder</strong></td><td>Enviado há mais de 7 dias</td><td class="hint">A taxa de resposta é o limite de tudo o que se sabe do doente.</td></tr>
+          <tr><td><strong>Prioridade pediátrica</strong></td><td>Criança &lt; 18 meses a aguardar cirurgia há mais de 30 dias</td><td class="hint">Janela de plasticidade auditiva.</td></tr>
+          <tr><td><strong>Processador com mais de 5 anos</strong></td><td>Processador sem substituição há mais de 5 anos</td><td class="hint">Reavaliar com testes vocais e APHAB + APSQ: 35–42% só têm benefício documentado pelos PROMs (Lailach et al., 2023).</td></tr>
+          <tr><td><strong>Reabilitação musical</strong></td><td>Fator de reabilitação MuRQoL ≥ 1</td><td class="hint">A música importa mais do que a pessoa a consegue viver (Frosolini et al., 2022).</td></tr>
         </tbody>
-      </table>
+      </table></div>
+      <p class="hint" style="margin:10px 0 0;">Os limiares estão definidos em <span class="mono">database/01_schema.sql</span> (vista <span class="mono">v_alertas</span>) e são propostas para a equipa rever.</p>
     </div>
 
   </main>
 </div>
 
-<script charset="utf-8" src="../assets/js/dados.js"></script>
+<script charset="utf-8" src="../assets/js/vendor/supabase.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-config.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-client.js"></script>
 <script charset="utf-8" src="../assets/js/app.js"></script>
 <script>
-  const estilo = { alerta:['banner-alert','pill-alert'], aviso:['banner-info','pill-warn'], info:['banner-info','pill-pending'] };
+  let ALERTAS = [], filtro = '';
+  const NOMES = {
+    etapa_atrasada: 'Etapa parada', uso_baixo: 'Uso baixo', expectativas: 'Expectativas', sem_interprete: 'Intérprete',
+    pedido_marcacao: 'Pedido de consulta', mensagem_urgente: 'Mensagem urgente', prom_pendente: 'Questionário',
+    prioridade_pediatrica: 'Prioridade pediátrica', reavaliar_processador: 'Processador', reabilitacao_musical: 'Música'
+  };
+  const ORDEM = { alerta: 0, aviso: 1, info: 2 };
 
-  document.getElementById('lista-alertas').innerHTML = CREIC.alertas.map((a, i) => `
-    <div class="card" style="margin-bottom:14px;">
-      <div style="display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap;">
-        <div style="flex:1; min-width:260px;">
-          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:8px;">
-            <span class="pill ${estilo[a.nivel][1]}">${a.nivel}</span>
-            <strong style="font-size:.95rem;">${a.titulo}</strong>
+  function pintar() {
+    const regras = [...new Set(ALERTAS.map(a => a.regra))];
+    document.getElementById('filtros').innerHTML =
+      `<label class="chip"><input type="radio" name="f" value="" ${!filtro ? 'checked' : ''} onchange="filtro=''; pintar()"><span>Todos (${ALERTAS.length})</span></label>` +
+      regras.map(r => `<label class="chip"><input type="radio" name="f" value="${r}" ${filtro === r ? 'checked' : ''} onchange="filtro='${r}'; pintar()">
+        <span>${NOMES[r] || r} (${ALERTAS.filter(a => a.regra === r).length})</span></label>`).join('');
+
+    const lista = ALERTAS.filter(a => !filtro || a.regra === filtro)
+      .sort((a, b) => ORDEM[a.nivel] - ORDEM[b.nivel] || new Date(a.desde) - new Date(b.desde));
+    document.getElementById('lista').innerHTML = lista.length ? lista.map(a => `
+      <div class="card" style="margin-bottom:12px; padding:18px 22px;">
+        <div style="display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap;">
+          <div style="flex:1; min-width:260px;">
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:6px;">
+              <span class="pill ${ROTULOS.nivel[a.nivel]}">${esc(a.nivel)}</span>
+              <strong style="font-size:.95rem;">${esc(a.titulo)}</strong>
+            </div>
+            <p style="font-size:.88rem; color:var(--ink-soft); margin-bottom:6px;">${esc(a.detalhe)}</p>
+            <p class="hint mono" style="margin:0;"><a href="doente.html?id=${a.doente_id}">${esc(a.nome)}</a> · ${esc(a.processo)} · ${ROTULOS.grupo[a.grupo]} · desde ${fmtData(a.desde)}</p>
           </div>
-          <p style="font-size:.88rem; color:var(--ink-soft); margin-bottom:8px;">${a.detalhe}</p>
-          <p class="hint mono" style="margin:0;">
-            <a href="doente.html">${a.nome || a.doente}</a> · ${a.processo} · ${a.quando}
-          </p>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <a class="btn btn-primary btn-sm" href="doente.html?id=${a.doente_id}">Abrir ficha</a>
+            <button class="btn btn-ghost btn-sm" type="button" data-chave="${esc(a.chave)}" data-doente="${a.doente_id}" onclick="tratar(this)">Marcar como tratado</button>
+          </div>
         </div>
-        <div style="display:flex; flex-direction:column; gap:8px; align-items:stretch;">
-          <button class="btn btn-primary btn-sm" type="button"
-                  onclick="this.textContent='Feito'; this.disabled=true;">${a.accao}</button>
-          <button class="btn btn-ghost btn-sm" type="button"
-                  onclick="this.closest('.card').style.opacity=.45;">Marcar como tratado</button>
-        </div>
-      </div>
-    </div>`).join('');
+      </div>`).join('') : `<div class="card">${vazio(ALERTAS.length ? 'Nenhum alerta com este filtro.' : 'Sem alertas por tratar.')}</div>`;
+  }
+
+  async function tratar(btn) {
+    const nota = prompt('Nota sobre o que foi feito (opcional):');
+    if (nota === null) return;
+    try {
+      await creicApi.tratarAlerta(btn.dataset.chave, btn.dataset.doente, nota);
+      ALERTAS = ALERTAS.filter(a => a.chave !== btn.dataset.chave);
+      aviso('Alerta tratado.');
+      pintar();
+    } catch (e) { aviso(e.message, 'erro'); }
+  }
+
+  (async function () {
+    const s = await iniciarPagina();
+    if (!s) return;
+    try { ALERTAS = await creicApi.listarAlertas(); pintar(); }
+    catch (e) { document.getElementById('lista').innerHTML = erroHTML(e); }
+  })();
 </script>
 </body>
 </html>

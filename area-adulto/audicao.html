@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Resultados de audição — SoundBirth</title>
+<link rel="icon" type="image/png" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body class="page-tint a-carregar" data-area="adulto" data-pagina="audicao.html">
+<div id="topbar"></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main-area">
+
+    <p class="eyebrow">A minha audição</p>
+    <h1 style="font-size:1.9rem;">O que mudou desde o implante</h1>
+    <p style="color:var(--ink-soft); max-width:68ch;">
+      Os seus resultados nos testes feitos na cabine, explicados em linguagem simples. Servem para
+      acompanhar o progresso — não substituem o que a equipa lhe diz na consulta.
+    </p>
+    <div class="grid g-2" style="margin-top:24px; align-items:start;">
+      <div>
+        <div class="audio-box"><p class="eyebrow">Que sons consigo detetar</p><div id="audiograma"><p class="hint">A carregar…</p></div></div>
+        <p class="hint" style="max-width:56ch; margin-top:12px;">
+          Quanto mais alta a linha no gráfico, mais baixinho é o som que consegue detetar. A faixa
+          sombreada é a <strong>zona da fala</strong>: é onde vivem os sons das conversas.
+        </p>
+      </div>
+      <div>
+        <div class="card"><p class="eyebrow">Palavras compreendidas sem ler os lábios</p><div id="g-silencio"></div>
+          <p class="hint" style="margin-top:8px;">Percentagem de palavras repetidas corretamente num sítio silencioso.</p></div>
+        <div class="card" style="margin-top:20px;"><p class="eyebrow">No meio do barulho</p><div id="g-ruido"></div>
+          <p class="hint" style="margin-top:8px;">Perceber no barulho é sempre mais difícil, e é o que mais tempo leva a melhorar.</p></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:24px; max-width:74ch;">
+      <p class="eyebrow">O que é normal sentir</p>
+      <details class="faq-item" open><summary>O som parece metálico ou robótico</summary>
+        <div class="faq-a">É o mais frequente nos primeiros meses: o cérebro está a aprender a ler um sinal novo. Costuma tornar-se mais natural com o tempo, e mais depressa em quem usa o processador muitas horas por dia.</div></details>
+      <details class="faq-item"><summary>Os testes melhoraram, mas continuo cansado ao fim do dia</summary>
+        <div class="faq-a">O esforço para ouvir não aparece nos testes de cabine e é das coisas que mais tempo leva a mudar. Diga-o à equipa e registe-o nos questionários: conta para a avaliação.</div></details>
+      <details class="faq-item"><summary>Um dia ouço melhor do que no outro</summary>
+        <div class="faq-a">Acontece, sobretudo com cansaço. Se a diferença for grande e persistente, ou ouvir um apito ou uma distorção nova, escreva à equipa.</div></details>
+    </div>
+
+  </main>
+</div>
+
+<script charset="utf-8" src="../assets/js/vendor/supabase.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-config.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-client.js"></script>
+<script charset="utf-8" src="../assets/js/app.js"></script>
+<script charset="utf-8" src="../assets/js/paginas-utilizador.js"></script>
+<script>
+(async function () {
+    const s = await U.iniciar();
+    if (!s) return;
+    try {
+      const lista = await creicApi.listarAvaliacoes(s.doente_id);
+      const antes = [...lista].reverse().find(a => a.tonal && /protese/.test(a.condicao || ''));
+      const agora = [...lista].reverse().find(a => a.tonal && /implante/.test(a.condicao || ''));
+      const series = [];
+      if (antes) series.push({ rotulo: 'Antes: com prótese (' + fmtData(antes.data) + ')', cor: '#C24A33', marca: 'x', tonal: antes.tonal });
+      if (agora) series.push({ rotulo: 'Agora: com implante (' + fmtData(agora.data) + ')', cor: '#0E8C95', marca: 'o', tonal: agora.tonal });
+      if (series.length) desenharAudiograma('audiograma', series);
+      else document.getElementById('audiograma').innerHTML = vazio('Ainda sem audiogramas registados.');
+      const rot = { com_protese: 'Antes', basal: 'Basal', ativacao: 'Ativação', '1m': '1 mês', '3m': '3 meses', '6m': '6 meses', '12m': '12 meses', anual: 'Anual' };
+      const vs = lista.filter(a => a.vocal_silencio != null), vr = lista.filter(a => a.vocal_ruido != null);
+      desenharBarras('g-silencio', vs.map(a => Number(a.vocal_silencio)), vs.map(a => rot[a.momento] || a.momento), { max: 100, unidade: '%', descricao: 'Palavras compreendidas no silêncio' });
+      desenharBarras('g-ruido', vr.map(a => Number(a.vocal_ruido)), vr.map(a => rot[a.momento] || a.momento), { max: 100, unidade: '%', cor: '#6C63C4', descricao: 'Palavras compreendidas no ruído' });
+    } catch (e) { document.getElementById('audiograma').innerHTML = erroHTML(e); }
+  })();
+</script>
+</body>
+</html>

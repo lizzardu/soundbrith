@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" href="../assets/img/favicon.png">
 <link rel="stylesheet" href="../assets/css/styles.css">
 </head>
-<body class="page-tint" data-area="profissional" data-pagina="reuniao.html">
+<body class="page-tint a-carregar" data-area="profissional" data-pagina="reuniao.html">
 <div id="topbar"></div>
 
 <div class="app-shell">
@@ -16,67 +16,134 @@
   <main class="main-area">
 
     <p class="eyebrow">Grupo de implante coclear</p>
-    <h1 style="font-size:1.8rem;">Reunião de decisão de candidatura</h1>
-    <p class="mono" style="color:var(--wave-deep);" id="cabecalho-reuniao"></p>
-    <p style="color:var(--ink-soft); max-width:70ch;">
-      Cada caso chega à reunião com as seis avaliações reunidas numa página. O que falta
-      aparece a vermelho — e um caso incompleto não deve consumir tempo de reunião.
-      A decisão fica registada em ata e entra automaticamente na jornada do doente.
+    <h1 style="font-size:1.8rem;">Casos para decisão</h1>
+    <p style="color:var(--ink-soft); max-width:72ch;">
+      Entram aqui os doentes cuja etapa em curso é a reunião do grupo. Cada caso chega com o
+      estudo de candidatura reunido numa página: o que falta aparece a vermelho, e as
+      expectativas do candidato aparecem ao lado do resultado típico — para serem discutidas
+      antes da decisão, e não depois.
     </p>
 
-    <div id="casos" style="margin-top:24px;"></div>
+    <div id="casos"><p class="hint">A carregar…</p></div>
+
+    <div class="card" style="margin-top:28px;">
+      <p class="eyebrow">Decisões recentes</p>
+      <div id="recentes"></div>
+    </div>
 
   </main>
 </div>
 
-<script charset="utf-8" src="../assets/js/dados.js"></script>
+<script charset="utf-8" src="../assets/js/vendor/supabase.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-config.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-client.js"></script>
 <script charset="utf-8" src="../assets/js/app.js"></script>
 <script>
-  const r = CREIC.reuniao;
-  document.getElementById('cabecalho-reuniao').textContent =
-    r.data + ' · ' + r.local + ' · ' + r.presentes.join(', ');
+  const DECISAO = { candidato: 'Candidato a implante', nao_candidato: 'Não candidato', adiar: 'Adiar — completar estudo', rever: 'Rever mais tarde' };
+  const DOMINIOS = { comunicacao: 'Comunicação', emocional: 'Emocional', entretenimento: 'Entretenimento', ambiente: 'Ambiente', esforco_auditivo: 'Esforço auditivo', social: 'Social', global: 'Global' };
+  let NORMAS = {};
 
-  document.getElementById('casos').innerHTML = r.casos.map((c, i) => `
-    <div class="card" style="margin-bottom:20px;">
-      <div style="display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; align-items:flex-start;">
+  async function caso(d) {
+    const [fases, aval, resp, prefs] = await Promise.all([
+      creicApi.obterJornada(d.doente_id, d.grupo), creicApi.listarAvaliacoes(d.doente_id),
+      creicApi.listarRespostas(d.doente_id), creicApi.obterPreferencias(d.doente_id)
+    ]);
+    const estudo = fases.find(f => f.fase_ordem === (d.grupo === 'adulto' ? 2 : 3)) || { etapas: [] };
+    const reuniao = fases.flatMap(f => f.etapas).find(e => e.id === d.etapa_id);
+    const falta = estudo.etapas.filter(e => e.registo && !['feito', 'nao_aplicavel'].includes(e.registo.estado));
+    const ultimaAud = [...aval].reverse().find(a => a.vocal_silencio != null);
+    const exp = resp.find(r => r.questionario_id === 'ciqol_exp');
+
+    const expHTML = exp && exp.subescalas ? `<div class="dominios" style="margin-top:8px;">${Object.keys(DOMINIOS)
+      .filter(k => exp.subescalas[k] != null && NORMAS[k]).map(k => {
+        const v = exp.subescalas[k], n = NORMAS[k], acima = v > n.media + n.dp;
+        return `<div class="dominio ${acima ? 'acima' : ''}"><div class="n">${num(v)}</div><div class="l">${DOMINIOS[k]}<br>típico ${num(n.media)} ± ${num(n.dp)}</div></div>`;
+      }).join('')}</div>` : (d.grupo === 'adulto' ? '<p class="hint" style="margin:6px 0 0; color:var(--alert);">CIQOL-Expectations ainda não respondido.</p>' : '<p class="hint" style="margin:6px 0 0;">Não aplicável em pediatria (instrumento validado só em adultos).</p>');
+
+    return `<div class="card" style="margin-top:20px;">
+      <div style="display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap;">
         <div>
-          <p class="eyebrow">Caso ${i+1}</p>
-          <h2 style="font-size:1.2rem; margin-bottom:2px;">${c.nome}</h2>
-          <p class="mono hint" style="margin:0;">${c.processo} · ${c.idade} ${c.idade === 1 ? 'ano' : 'anos'}</p>
+          <h2 style="font-size:1.25rem; margin-bottom:2px;"><a href="doente.html?id=${d.doente_id}" style="color:var(--deep);">${esc(d.nome)}</a>
+            <span class="pill ${d.grupo === 'pediatrico' ? 'pill-sign' : 'pill-wave'}">${ROTULOS.grupo[d.grupo]}</span>
+            ${prefs && (prefs.usa_lgp || prefs.precisa_interprete) ? '<span class="pill pill-sign">LGP</span>' : ''}</h2>
+          <p class="mono hint" style="margin:0;">${esc(d.processo)} · ${idadeTexto(d.data_nascimento)} · na reunião desde ${reuniao && reuniao.registo && reuniao.registo.iniciada_em ? fmtData(reuniao.registo.iniciada_em) : '—'}</p>
         </div>
-        <span class="pill ${c.pendente ? 'pill-warn' : 'pill-ok'}">
-          ${c.pendente ? 'processo incompleto' : 'pronto para decisão'}
-        </span>
+        <span class="pill ${falta.length ? 'pill-warn' : 'pill-ok'}">${falta.length ? 'estudo incompleto' : 'pronto para decisão'}</span>
       </div>
 
-      <p style="font-size:.92rem; margin:14px 0 16px;">${c.sintese}</p>
-
-      <div class="grid g-2" style="gap:14px;">
-        <div><strong style="font-size:.82rem;">Audiologia</strong><p style="font-size:.86rem; color:var(--ink-soft); margin:4px 0 0;">${c.audiologia}</p></div>
-        <div><strong style="font-size:.82rem;">Imagem</strong><p style="font-size:.86rem; color:var(--ink-soft); margin:4px 0 0;">${c.imagem}</p></div>
-        <div><strong style="font-size:.82rem;">Terapia da fala</strong><p style="font-size:.86rem; color:var(--ink-soft); margin:4px 0 0;">${c.fala}</p></div>
-        <div><strong style="font-size:.82rem;">Psicologia</strong><p style="font-size:.86rem; color:var(--ink-soft); margin:4px 0 0;">${c.psico}</p></div>
+      <div class="grid g-2" style="gap:18px; margin-top:16px;">
+        <div>
+          <strong style="font-size:.84rem;">Estudo de candidatura</strong>
+          <ul style="margin:6px 0 0; padding-left:18px; font-size:.86rem; line-height:1.7;">
+            ${estudo.etapas.map(e => {
+              const s = e.registo ? e.registo.estado : 'previsto';
+              const ok = s === 'feito' || s === 'nao_aplicavel';
+              return `<li style="color:${ok ? 'var(--ink)' : 'var(--alert)'};">${esc(e.titulo)} — ${ok ? (e.registo.data_efetiva ? fmtData(e.registo.data_efetiva) : ROTULOS.estadoEtapa[s]) : '<strong>' + ROTULOS.estadoEtapa[s] + '</strong>'}</li>`;
+            }).join('')}
+          </ul>
+        </div>
+        <div>
+          <strong style="font-size:.84rem;">Audiologia mais recente</strong>
+          <p style="font-size:.86rem; color:var(--ink-soft); margin:6px 0 12px;">${ultimaAud
+            ? `${fmtData(ultimaAud.data)} · ${esc((ultimaAud.condicao || '').replace(/_/g, ' '))}: silêncio ${num(ultimaAud.vocal_silencio)}%${ultimaAud.vocal_ruido != null ? ', ruído ' + num(ultimaAud.vocal_ruido) + '%' : ''}`
+            : '<span style="color:var(--alert);">Sem avaliação vocal registada.</span>'}</p>
+          <strong style="font-size:.84rem;">Expectativas face ao típico</strong>
+          ${expHTML}
+        </div>
       </div>
 
-      ${c.pendente ? `<div class="banner-alert" style="margin-top:16px;">
-        <span aria-hidden="true">&#9888;</span>
-        <span><strong>Em falta:</strong> ${c.pendente}</span></div>` : ''}
+      ${falta.length ? `<div class="banner-alert" style="margin-top:16px;"><span aria-hidden="true">&#9888;</span>
+        <span><strong>Em falta:</strong> ${falta.map(e => esc(e.titulo)).join(', ')}</span></div>` : ''}
 
       <hr class="divider">
-      <p class="eyebrow">Decisão da equipa</p>
-      <div class="chip-group">
-        <label class="chip"><input type="radio" name="dec${i}" ${c.proposta.startsWith('Candidat') || c.proposta.startsWith('Implanta') ? 'checked' : ''}><span>Candidato a implante</span></label>
-        <label class="chip"><input type="radio" name="dec${i}"><span>Não candidato</span></label>
-        <label class="chip"><input type="radio" name="dec${i}" ${c.proposta === 'Adiar decisão' ? 'checked' : ''}><span>Adiar — completar estudo</span></label>
-        <label class="chip"><input type="radio" name="dec${i}"><span>Rever em 6 meses</span></label>
-      </div>
-      <div class="field" style="margin:16px 0 0;">
-        <label for="ata${i}">Nota para a ata</label>
-        <input type="text" id="ata${i}" value="${c.proposta}">
-      </div>
-      <button class="btn btn-primary" type="button" style="margin-top:16px;"
-              onclick="this.textContent='Decisão registada na jornada do doente'">Registar decisão</button>
-    </div>`).join('');
+      <form onsubmit="decidir(event, '${d.doente_id}', '${reuniao && reuniao.registo ? reuniao.registo.id : ''}')">
+        <div class="chip-group" role="radiogroup" aria-label="Decisão">
+          ${Object.entries(DECISAO).map(([v, t]) => `<label class="chip"><input type="radio" name="decisao" value="${v}" required ${falta.length && v === 'adiar' ? 'checked' : ''}><span>${t}</span></label>`).join('')}
+        </div>
+        <div class="form-grid" style="margin-top:14px;">
+          <div class="field"><label>Lado proposto</label><select name="lado"><option value="">—</option><option>direito</option><option>esquerdo</option><option>bilateral</option></select></div>
+          <div class="field"><label>Data da reunião</label><input type="date" name="data" value="${creicApi.hojeISO()}" required></div>
+          <div class="field inteiro"><label>Fundamentação para a ata</label><textarea name="fundamentacao" rows="2"></textarea></div>
+          <div class="field inteiro"><label>Pendente</label><input type="text" name="pendentes" value="${esc(falta.map(e => e.titulo).join('; '))}"></div>
+        </div>
+        <label style="display:flex; gap:8px; align-items:center; font-weight:500; margin-top:12px;">
+          <input type="checkbox" name="concluir" ${falta.length ? '' : 'checked'}> Concluir a etapa da reunião na jornada (a seguinte passa a em curso)
+        </label>
+        <button class="btn btn-primary" type="submit" style="margin-top:14px;">Registar decisão</button>
+      </form>
+    </div>`;
+  }
+
+  async function decidir(ev, doenteId, jornadaId) {
+    ev.preventDefault();
+    const f = ev.target;
+    try {
+      await creicApi.registarDecisao({ doente_id: doenteId, data_reuniao: f.data.value, decisao: f.decisao.value,
+        lado_proposto: f.lado.value || null, fundamentacao: valorForm(f, 'fundamentacao'), pendentes: valorForm(f, 'pendentes') });
+      if (f.concluir.checked && jornadaId) await creicApi.atualizarEtapa(jornadaId, { estado: 'feito', data_efetiva: f.data.value });
+      aviso('Decisão registada.');
+      carregar();
+    } catch (e) { aviso(e.message, 'erro'); }
+  }
+
+  async function carregar() {
+    try {
+      const [doentes, catalogo, decisoes] = await Promise.all([creicApi.listarDoentes(), creicApi.catalogo('adulto'), creicApi.listarDecisoes()]);
+      NORMAS = (catalogo.find(q => q.id === 'ciqol35') || {}).normas || {};
+      const emReuniao = doentes.filter(d => d.estado === 'ativo' && (d.etapa_id === 'a_reuniao' || d.etapa_id === 'p_reuniao'));
+      document.getElementById('casos').innerHTML = emReuniao.length
+        ? (await Promise.all(emReuniao.map(caso))).join('')
+        : '<div class="card" style="margin-top:20px;">' + vazio('Nenhum doente com a reunião do grupo como etapa em curso.') + '</div>';
+      document.getElementById('recentes').innerHTML = decisoes.length ? decisoes.slice(0, 12).map(x => `<div class="linha-acao"><div class="corpo">
+        <span class="hint mono">${fmtData(x.data_reuniao)}</span> · <a href="doente.html?id=${x.doente_id}">${esc(x.doentes ? x.doentes.nome : '')}</a><br>
+        <strong>${esc(DECISAO[x.decisao])}</strong>${x.lado_proposto ? ' · ' + esc(x.lado_proposto) : ''}
+        ${x.fundamentacao ? '<p class="hint" style="margin:2px 0 0;">' + esc(x.fundamentacao) + '</p>' : ''}</div></div>`).join('') : vazio('Sem decisões registadas.');
+    } catch (e) {
+      document.getElementById('casos').innerHTML = erroHTML(e);
+    }
+  }
+
+  (async function () { if (await iniciarPagina()) carregar(); })();
 </script>
 </body>
 </html>

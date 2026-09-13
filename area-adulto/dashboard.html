@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Início — SoundBirth</title>
+<link rel="icon" type="image/png" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body class="page-tint a-carregar" data-area="adulto" data-pagina="dashboard.html">
+<div id="topbar"></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main-area">
+
+    <p class="eyebrow" id="saudacao">Olá</p>
+    <h1 style="font-size:1.9rem;" id="titulo">A carregar…</h1>
+    <p style="color:var(--ink-soft); max-width:66ch;" id="explicacao"></p>
+
+    <div class="card" style="margin-top:20px;">
+      <p class="eyebrow">Onde estou na jornada</p>
+      <div class="onda onda-light" id="onda"></div>
+      <p class="hint" style="margin:8px 0 0;"><strong id="contagem"></strong> · <a href="jornada.html">ver a jornada toda</a></p>
+    </div>
+
+    <div class="grid g-2" style="margin-top:24px; align-items:start;">
+      <div class="card" id="proxima"></div>
+      <div class="card" id="por-fazer"></div>
+    </div>
+
+    <div class="card" style="margin-top:24px;" id="bloco-uso" hidden>
+      <p class="eyebrow">O meu uso do processador</p>
+      <h2 style="font-size:1.15rem;">Horas por dia, em cada programação</h2>
+      <p style="font-size:.9rem; color:var(--ink-soft); max-width:62ch;">
+        Estes números vêm do próprio processador. Quanto mais horas por dia, melhor tende a ser o
+        resultado: o cérebro precisa de tempo com o novo som para o aprender a interpretar.
+      </p>
+      <div id="grafico-uso"></div>
+    </div>
+
+    <div class="grid g-3" style="margin-top:24px;">
+      <div class="card">
+        <h3>Tenho uma dúvida</h3>
+        <p style="font-size:.88rem; color:var(--ink-soft);">Escreva à equipa. Respondemos em dias úteis.</p>
+        <a class="btn btn-wave btn-sm" href="mensagens.html">Escrever mensagem</a>
+      </div>
+      <div class="card">
+        <h3>Preciso de uma consulta</h3>
+        <p style="font-size:.88rem; color:var(--ink-soft);">Peça por escrito, sem telefonar. A equipa marca e avisa.</p>
+        <a class="btn btn-ghost btn-sm" href="marcacoes.html">Pedir consulta</a>
+      </div>
+      <div class="card">
+        <h3>O aparelho não funciona</h3>
+        <p style="font-size:.88rem; color:var(--ink-soft);">Passos a verificar antes de contactar o centro.</p>
+        <a class="btn btn-ghost btn-sm" href="recursos.html">Ver o que fazer</a>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script charset="utf-8" src="../assets/js/vendor/supabase.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-config.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-client.js"></script>
+<script charset="utf-8" src="../assets/js/app.js"></script>
+<script charset="utf-8" src="../assets/js/paginas-utilizador.js"></script>
+<script>
+  (async function () {
+    const s = await U.iniciar();
+    if (!s) return;
+    document.getElementById('saudacao').textContent = 'Olá, ' + s.nome.split(' ')[0];
+    try {
+      const [fases, marcacoes, pedidos, mensagens, progs] = await Promise.all([
+        U.jornada('onda'), creicApi.listarMarcacoes(s.doente_id), creicApi.listarPedidos(s.doente_id),
+        creicApi.listarMensagens(s.doente_id), creicApi.listarProgramacoes(s.doente_id)
+      ]);
+
+      const { ativa, feitas, total } = U.etapaAtual(fases);
+      document.getElementById('contagem').textContent = feitas + ' de ' + total + ' etapas feitas';
+      if (ativa) {
+        const fase = fases.find(f => f.etapas.includes(ativa));
+        document.getElementById('titulo').textContent = 'Está na fase: ' + fase.fase.toLowerCase();
+        document.getElementById('explicacao').innerHTML = `Agora: <strong>${esc(ativa.titulo_simples || ativa.titulo)}</strong>.
+          ${ativa.nota ? esc(ativa.nota) : ''}${ativa.prazo_texto && ativa.prazo_texto !== '—' ? ' Tempo habitual: ' + esc(ativa.prazo_texto) + '.' : ''}`;
+      } else {
+        document.getElementById('titulo').textContent = feitas === total ? 'Concluiu todas as etapas da jornada' : 'A sua jornada';
+      }
+
+      const futura = marcacoes.find(m => m.quando && new Date(m.quando) > new Date() && ['marcada', 'confirmada'].includes(m.estado));
+      document.getElementById('proxima').innerHTML = `<p class="eyebrow">A seguir</p>` + (futura
+        ? `<h2 style="font-size:1.15rem;">${esc(futura.tipo)}</h2>
+           <p class="mono" style="font-size:.9rem; color:var(--wave-deep); margin-bottom:6px;">${fmtDataHora(futura.quando)}</p>
+           <p style="font-size:.9rem; color:var(--ink-soft);">${esc([futura.local, futura.profissional].filter(Boolean).join(' · '))}</p>
+           <a class="btn btn-ghost btn-sm" href="marcacoes.html">Ver marcações ou pedir apoio</a>`
+        : vazio('Sem consultas marcadas.') + '<a class="btn btn-ghost btn-sm" href="marcacoes.html" style="margin-top:10px;">Pedir consulta</a>');
+
+      const pend = pedidos.filter(p => p.estado === 'pendente');
+      const porLer = mensagens.filter(m => m.papel_autor === 'profissional' && !m.lida_utilizador_em).length;
+      const itens = [];
+      pend.forEach(p => itens.push(`<li><a href="questionarios.html">${esc(p.questionarios.sigla)}</a>${p.prazo ? ' — até ' + fmtData(p.prazo) : ''}</li>`));
+      if (porLer) itens.push(`<li><a href="mensagens.html">${porLer} ${porLer === 1 ? 'mensagem' : 'mensagens'} da equipa</a> por ler</li>`);
+      document.getElementById('por-fazer').innerHTML = `<p class="eyebrow">Por fazer</p>` + (itens.length
+        ? `<ul style="margin:0 0 12px; padding-left:20px; font-size:.92rem; line-height:1.9;">${itens.join('')}</ul>
+           ${pend.length ? '<div class="banner-info"><span aria-hidden="true">&#128161;</span><span>Os questionários mostram à equipa o que os testes não mostram: como está a sua vida com o implante.</span></div>' : ''}`
+        : vazio('Nada por fazer. Obrigado.'));
+
+      const comUso = progs.filter(p => p.uso_medio_h != null).slice(-8);
+      if (comUso.length) {
+        document.getElementById('bloco-uso').hidden = false;
+        desenharBarras('grafico-uso', comUso.map(p => Number(p.uso_medio_h)), comUso.map(p => fmtData(p.data).slice(0, 6)),
+          { max: 14, unidade: ' h', alvo: 10, alvoTxt: 'referência: 10 h/dia', descricao: 'Horas de uso diário do processador' });
+      }
+    } catch (e) {
+      document.getElementById('titulo').textContent = 'Não foi possível carregar';
+      document.getElementById('explicacao').innerHTML = erroHTML(e);
+    }
+  })();
+</script>
+</body>
+</html>

@@ -1,180 +1,175 @@
 /* ========================================================================
-   SOUNDBIRTH — catálogo de PROMs (resultados reportados pelo doente)
+   SOUNDBIRTH — catálogo de referência de PROMs, PREMs e expectativas
+   (página area-profissional/instrumentos.html)
 
-   Proposta de bateria para discussão com a equipa do CREIC, não uma lista
-   fechada. Três regras orientaram a escolha:
+   O catálogo operacional — o que se envia e responde — está na tabela
+   `questionarios` (database/02_catalogo.sql). Este ficheiro explica as
+   escolhas: porquê cada instrumento, com que evidência, e o que mudou depois
+   da leitura dos artigos da pasta ULSSJ/PROM/cochlear implants.
 
-   1. Núcleo curto. Um instrumento específico de audição + um genérico de
-      qualidade de vida + satisfação. Tudo o resto é modular, pedido só a
-      quem tem a queixa correspondente. Baterias longas não se respondem.
-   2. Quem responde faz parte do dado. Abaixo dos 6 anos responde o pai, a
-      mãe ou o cuidador (proxy); dos 6 aos 12 responde a criança com apoio;
-      a partir dos 13 responde o próprio. Misturar proxy e autorreporte na
-      mesma série torna a comparação inútil.
-   3. Acessível ou não conta. Um questionário escrito só em português
-      corrente, entregue a quem não ouve e comunica em LGP, mede literacia
-      e não audição. Todos os instrumentos precisam de vídeo em LGP e de
-      versão em linguagem clara.
-
-   estadoPT: situação da versão portuguesa — a confirmar caso a caso com a
-   equipa antes de qualquer utilização (algumas exigem licença ou registo).
+   Quatro regras:
+   1. Específico antes de genérico. Instrumentos genéricos detetam metade do
+      efeito do implante (SMD 0,79 vs 1,69–1,82 nos específicos) e os testes
+      de fala explicam só 10–20% da qualidade de vida genérica e 5–6% da
+      específica (McRackan et al., 2018).
+   2. Núcleo curto; o resto é modular.
+   3. Quem responde faz parte do dado (proxy ≠ autorreporte).
+   4. Expectativas medidas antes, resultados medidos depois, nos mesmos
+      domínios — só assim se sabe se foram cumpridas (McRackan et al., 2022).
    ======================================================================== */
 
-CREIC.proms = {
+window.CREIC = window.CREIC || {};
 
-  /* ------------------------------------------------------------------
-     ADULTOS — 18 anos ou mais. Responde sempre o próprio.
-     ------------------------------------------------------------------ */
+window.CREIC.proms = {
+
+  mudancas: [
+    { de: 'EQ-5D-5L no núcleo', para: 'HUI-3 no núcleo (EQ-5D-5L opcional)',
+      porque: 'O EQ-5D e o SF-36 não têm dimensão de audição nem itens de fatores ambientais (Kartal Ozcan et al., 2026); o HUI-3 deteta o efeito do implante (SMD 0,84) e foi a base dos QALY na análise custo-benefício (McRackan et al., 2018; Neve et al., 2021).' },
+    { de: 'NCIQ como perfil detalhado', para: 'CIQOL-35 Profile (NCIQ só para séries antigas)',
+      porque: 'O NCIQ é o mais usado (58% dos estudos) mas tem 60 itens, fadiga de resposta e dúvidas de precisão; o CIQOL-35 cobre as três componentes da CIF com 35 itens e melhores propriedades (Kartal Ozcan et al., 2026).' },
+    { de: 'Sem medida de expectativas', para: 'CIQOL-Expectations na candidatura, comparado com normas',
+      porque: 'Os candidatos esperam mais do que os utilizadores experientes conseguem em comunicação e esforço auditivo; as expectativas mudam com o aconselhamento (McRackan et al., 2022).' },
+    { de: 'Atualização do processador só por testes de fala', para: 'APHAB + APSQ antes e 4 semanas depois, com diferença mínima relevante',
+      porque: '35–42% dos doentes têm benefício relevante nos PROMs sem ganho nos testes vocais (Lailach et al., 2023).' },
+    { de: 'Música fora da avaliação', para: 'MuRQoL a partir dos 12 anos, com fator de reabilitação',
+      porque: 'Identificou vontade de reabilitação musical em 63% dos doentes, sem correlação relevante com os testes audiológicos (Frosolini et al., 2022).' },
+    { de: 'Satisfação genérica', para: 'PREM do centro + resultados sociais (emprego, escolaridade)',
+      porque: 'A OCDE recomenda PREMs; os modelos de cuidados raramente medem experiência ou resultados sociais (Ebrahimi-Madiseh et al., 2023). O benefício social do implante está sobretudo na escolaridade e no emprego (Neve et al., 2021).' }
+  ],
+
   adulto: {
     nucleo: [
-      { sigla:'CIQOL-10 Global', nome:'Cochlear Implant Quality of Life — versão global',
-        mede:'Qualidade de vida específica de quem usa implante coclear', itens:10, tempo:'3 min',
-        momentos:'Candidatura · 3 · 6 · 12 meses · anual',
-        porque:'Foi desenhado de raiz para adultos implantados, com metodologia moderna de desenvolvimento de instrumentos. É o mais sensível à mudança que o implante realmente produz.',
-        estadoPT:'versão portuguesa a confirmar com os autores' },
-      { sigla:'SSQ12', nome:'Speech, Spatial and Qualities of Hearing Scale — versão curta',
-        mede:'Audição na vida real: conversa, ruído, localização do som, esforço', itens:12, tempo:'6 min',
-        momentos:'Candidatura · 3 · 6 · 12 meses · anual',
-        porque:'É a linguagem comum dos centros de implante: permite comparar resultados com a literatura e com outros centros.',
-        estadoPT:'versão portuguesa em uso corrente' },
-      { sigla:'EQ-5D-5L', nome:'EuroQol 5 dimensões',
-        mede:'Qualidade de vida genérica, convertível em anos de vida ajustados (QALY)', itens:'5 + escala visual', tempo:'2 min',
-        momentos:'Candidatura · 12 meses · anual',
-        porque:'É o que permite defender o programa perante quem financia: sem uma medida genérica não se demonstra custo-efetividade nem se compara com outras patologias.',
-        estadoPT:'versão portuguesa validada; registo junto da EuroQol' },
-      { sigla:'Satisfação CREIC', nome:'Experiência com o centro',
-        mede:'Informação recebida, acessibilidade da comunicação, tempos de espera', itens:6, tempo:'2 min',
-        momentos:'Após cada marco do percurso',
-        porque:'Mede o que o centro controla — e é o único instrumento que deteta falhas de acessibilidade antes de elas gerarem abandono.',
-        estadoPT:'instrumento local, a construir' }
+      { sigla: 'CIQOL-10 Global', nome: 'Cochlear Implant Quality of Life — 10 Global', itens: 10, tempo: '3 min',
+        momentos: 'Candidatura · 3 · 6 · 12 meses · anual', icf: ['F', 'A', 'E'],
+        porque: 'Desenhado com utilizadores de implante e metodologia PROMIS. Curto o bastante para repetir em todos os marcos.',
+        estadoPT: 'sem versão portuguesa validada conhecida: tradução e adaptação necessárias' },
+      { sigla: 'SSQ12', nome: 'Speech, Spatial and Qualities of Hearing Scale — curta', itens: 12, tempo: '6 min',
+        momentos: 'Candidatura · 3 · 6 · 12 meses · anual', icf: ['F', 'A'],
+        porque: 'A linguagem comum dos centros de implante: permite comparar com a literatura.',
+        estadoPT: 'versão portuguesa em uso (confirmar a adotada)' },
+      { sigla: 'HUI-3', nome: 'Health Utilities Index Mark 3', itens: 15, tempo: '5 min',
+        momentos: 'Candidatura · 12 meses · anual', icf: ['F'],
+        porque: 'Utilidade para QALY com atributo de audição: é o genérico que deteta o implante e o que sustenta análises de custo.',
+        estadoPT: 'confirmar versão portuguesa; licença paga' },
+      { sigla: 'PREM', nome: 'Experiência com o CREIC (instrumento local)', itens: 6, tempo: '2 min',
+        momentos: 'Após cada marco do percurso', icf: ['E'],
+        porque: 'Mede o que o centro controla: informação, comunicação acessível, intérprete, tempos de resposta, decisão partilhada.',
+        estadoPT: 'original em português' }
+    ],
+    candidatura: [
+      { sigla: 'CIQOL-Expectations', nome: 'CIQOL — Expectativas', itens: 35, tempo: '10 min',
+        momentos: 'Antes e depois da consulta de aconselhamento', icf: ['F', 'A', 'E'],
+        porque: 'Mesmos seis domínios do CIQOL-35, na forma "vou conseguir". A plataforma compara cada domínio com a média + 1 DP de 705 utilizadores experientes e avisa quando está acima.',
+        estadoPT: 'sem versão portuguesa validada conhecida; gratuito com manual (MUSC)' },
+      { sigla: 'APHAB', nome: 'Abbreviated Profile of Hearing Aid Benefit', itens: 24, tempo: '8 min',
+        momentos: 'Início e fim da prova de próteses', icf: ['F', 'A', 'E'],
+        porque: 'Documenta, do ponto de vista do doente, o benefício insuficiente com prótese bem adaptada.',
+        estadoPT: 'confirmar versão portuguesa' },
+      { sigla: 'HADS', nome: 'Hospital Anxiety and Depression Scale', itens: 14, tempo: '5 min',
+        momentos: 'Candidatura · 12 meses', icf: ['F'],
+        porque: 'Com a psicologia: a surdez adquirida isola, e o humor pesa na adesão à reabilitação.',
+        estadoPT: 'versão portuguesa validada; licença' }
     ],
     modular: [
-      { sigla:'NCIQ', nome:'Nijmegen Cochlear Implant Questionnaire',
-        mede:'Seis domínios: perceção sonora básica e avançada, produção de fala, autoestima, atividade e interação social', itens:60, tempo:'15 min',
-        momentos:'Candidatura · 12 meses',
-        porque:'Detalhado demais para repetir com frequência, mas é o retrato mais completo do antes e depois. Usar só duas vezes.',
-        estadoPT:'versão portuguesa disponível' },
-      { sigla:'APHAB', nome:'Abbreviated Profile of Hearing Aid Benefit',
-        mede:'Benefício das próteses auditivas em quatro situações do dia a dia', itens:24, tempo:'8 min',
-        momentos:'Durante a prova de próteses (fase de candidatura)',
-        porque:'Documenta o benefício insuficiente com prótese bem adaptada — que é precisamente o que sustenta a indicação para implante.',
-        estadoPT:'versão portuguesa disponível' },
-      { sigla:'IOI-CI', nome:'International Outcome Inventory adaptado ao implante',
-        mede:'Uso, benefício, limitações, satisfação, impacto nos outros', itens:7, tempo:'2 min',
-        momentos:'12 meses · anual',
-        porque:'Sete perguntas para o seguimento de longo prazo, quando já não faz sentido repetir baterias longas.',
-        estadoPT:'adaptação do IOI-HA; versão a confirmar' },
-      { sigla:'THI', nome:'Tinnitus Handicap Inventory',
-        mede:'Impacto do acufeno no dia a dia', itens:25, tempo:'7 min',
-        momentos:'Candidatura · 6 · 12 meses — só com queixa de acufeno',
-        porque:'O acufeno é queixa muito frequente na surdez severa e costuma melhorar com o implante. Se não for medido, essa melhoria não aparece em lado nenhum.',
-        estadoPT:'versão portuguesa validada' },
-      { sigla:'DHI', nome:'Dizziness Handicap Inventory',
-        mede:'Impacto da tontura e do desequilíbrio', itens:25, tempo:'7 min',
-        momentos:'Pré-cirurgia · 3 meses — só com queixa ou risco vestibular',
-        porque:'A cirurgia pode afetar a função vestibular. Medir antes protege o doente e o centro.',
-        estadoPT:'versão portuguesa validada' },
-      { sigla:'HADS', nome:'Hospital Anxiety and Depression Scale',
-        mede:'Sintomas de ansiedade e depressão', itens:14, tempo:'5 min',
-        momentos:'Candidatura · 12 meses — articulado com a psicologia',
-        porque:'A surdez adquirida no adulto isola. É um dado clínico, não um extra — e identifica quem precisa de acompanhamento antes da cirurgia.',
-        estadoPT:'versão portuguesa validada' },
-      { sigla:'Esforço auditivo', nome:'Escala de esforço e fadiga auditiva',
-        mede:'Cansaço ao fim do dia por causa do esforço para ouvir', itens:'escala visual + 4 itens', tempo:'2 min',
-        momentos:'Candidatura · 6 · 12 meses',
-        porque:'Muitos doentes percebem bem nos testes e mesmo assim chegam exaustos ao fim do dia. É a queixa que os testes de cabine não captam.',
-        estadoPT:'escala visual analógica, sem necessidade de validação formal' }
+      { sigla: 'CIQOL-35 Profile', nome: 'CIQOL — perfil de 35 itens', itens: 35, tempo: '10 min',
+        momentos: 'Candidatura · 12 meses', icf: ['F', 'A', 'E'],
+        porque: 'Perfil detalhado por domínio; é contra ele que se lê se as expectativas foram cumpridas.',
+        estadoPT: 'sem versão portuguesa validada conhecida' },
+      { sigla: 'APHAB + APSQ', nome: 'Benefício + satisfação com o processador', itens: '24 + 15', tempo: '13 min',
+        momentos: 'Atualização: processador antigo e 4 semanas com o novo', icf: ['A', 'E'],
+        porque: 'Diferenças mínimas relevantes: APHAB ≥ 3,8 pp, APSQ ≥ 0,74. A plataforma aplica a regra e mostra se o benefício só aparece nos PROMs.',
+        estadoPT: 'APHAB: confirmar; APSQ: validado em alemão, versão portuguesa por fazer' },
+      { sigla: 'MuRQoL', nome: 'Music-Related Quality of Life', itens: 36, tempo: '10 min',
+        momentos: '12 meses · anual', icf: ['A', 'E'],
+        porque: 'Frequência e importância da música em espelho; fator de reabilitação = importância − frequência. Alerta a partir de 1.',
+        estadoPT: 'versão italiana validada; portuguesa por fazer' },
+      { sigla: 'Esforço auditivo', nome: 'Escala de esforço e fadiga (instrumento local)', itens: 4, tempo: '2 min',
+        momentos: 'Candidatura · 6 · 12 meses', icf: ['F', 'A'],
+        porque: 'O domínio onde as expectativas mais se afastam do resultado; os testes de cabine não o captam.',
+        estadoPT: 'original em português' },
+      { sigla: 'THI', nome: 'Tinnitus Handicap Inventory', itens: 25, tempo: '7 min',
+        momentos: 'Candidatura · 6 · 12 meses, com acufeno', icf: ['F', 'A'],
+        porque: 'O acufeno costuma melhorar com o implante; sem medir, a melhoria não fica registada.',
+        estadoPT: 'versão portuguesa validada' },
+      { sigla: 'DHI', nome: 'Dizziness Handicap Inventory', itens: 25, tempo: '7 min',
+        momentos: 'Antes da cirurgia · 3 meses, com risco vestibular', icf: ['F', 'A'],
+        porque: 'Medir antes protege o doente e o centro.',
+        estadoPT: 'versão portuguesa validada' },
+      { sigla: 'EQ-5D-5L', nome: 'EuroQol 5 dimensões', itens: 6, tempo: '2 min',
+        momentos: 'Opcional', icf: ['F', 'A'],
+        porque: 'Só para comparação com outras patologias e dados nacionais: subestima o benefício do implante.',
+        estadoPT: 'versão portuguesa validada; registo EuroQol' },
+      { sigla: 'NCIQ', nome: 'Nijmegen Cochlear Implant Questionnaire', itens: 60, tempo: '15 min',
+        momentos: 'Só para continuar séries antigas', icf: ['F', 'A', 'E'],
+        porque: 'Cobre 14 de 22 subdomínios da CIF, mas é longo e com dúvidas de precisão de medida.',
+        estadoPT: 'versão portuguesa disponível (confirmar)' }
     ]
   },
 
-  /* ------------------------------------------------------------------
-     PEDIATRIA — 0 aos 18 anos, por faixa etária.
-     Nos mais novos o instrumento mede o que os pais observam; a criança
-     só entra como respondente quando tem competência para isso.
-     ------------------------------------------------------------------ */
   pediatria: [
-    {
-      faixa: '0 aos 2 anos',
-      idadeRef: 'orientar pela idade auditiva (tempo desde a ativação), não pela idade civil',
-      quem: 'Pais ou cuidadores (proxy)',
+    { faixa: '0 aos 2 anos', idadeRef: 'orientar pela idade auditiva (tempo desde a ativação)', quem: 'Pais ou cuidadores',
       instrumentos: [
-        { sigla:'LittlEARS', nome:'LittlEARS Auditory Questionnaire', mede:'Desenvolvimento do comportamento auditivo no primeiro ano de audição', itens:35, quem:'Pais',
-          momentos:'Basal · mensal no 1.º ano de idade auditiva', porque:'Tem curva normativa por idade auditiva: mostra se a criança está a progredir ao ritmo esperado, e sinaliza cedo quando não está.', estadoPT:'versão portuguesa disponível (registo junto do editor)' },
-        { sigla:'IT-MAIS', nome:'Infant-Toddler Meaningful Auditory Integration Scale', mede:'Vocalização, alerta ao som e atribuição de significado aos sons', itens:10, quem:'Pais, em entrevista',
-          momentos:'Basal · 3 · 6 · 12 meses', porque:'Entrevista estruturada — funciona mesmo com famílias com baixa literacia.', estadoPT:'versão portuguesa em uso' },
-        { sigla:'PEACH', nome:'Parents Evaluation of Aural/Oral performance of Children', mede:'Desempenho auditivo em situações reais, no silêncio e no ruído', itens:13, quem:'Pais',
-          momentos:'3 · 6 · 12 meses · anual', porque:'Obriga os pais a dar exemplos concretos da última semana, o que reduz a resposta por impressão geral.', estadoPT:'versão portuguesa a confirmar' },
-        { sigla:'PedsQL Infant', nome:'PedsQL Infant Scales', mede:'Qualidade de vida global do bebé', itens:'36-45', quem:'Pais',
-          momentos:'Basal · 12 meses', porque:'Medida genérica que permite comparar com outras condições pediátricas.', estadoPT:'versão portuguesa validada; licença necessária' }
-      ]
-    },
-    {
-      faixa: '3 aos 5 anos',
-      idadeRef: 'pré-escolar',
-      quem: 'Pais e educadora de infância',
+        { sigla: 'LittlEARS', nome: 'LittlEARS Auditory Questionnaire', itens: 35, quem: 'Pais', momentos: 'Basal · mensal no 1.º ano de audição', icf: ['F', 'A'],
+          porque: 'Curva normativa por idade auditiva: sinaliza cedo quem não progride.', estadoPT: 'disponível (confirmar edição e registo)' },
+        { sigla: 'IT-MAIS', nome: 'Infant-Toddler Meaningful Auditory Integration Scale', itens: 10, quem: 'Pais, em entrevista', momentos: 'Basal · 3 · 6 · 12 meses', icf: ['F', 'A'],
+          porque: 'Entrevista estruturada: funciona com baixa literacia.', estadoPT: 'em uso (confirmar)' },
+        { sigla: 'PEACH', nome: 'Parents Evaluation of Aural/Oral Performance of Children', itens: 13, quem: 'Pais', momentos: '3 · 6 · 12 meses · anual', icf: ['A', 'E'],
+          porque: 'Exemplos concretos da última semana, em silêncio e em ruído.', estadoPT: 'confirmar' },
+        { sigla: 'PREM (família)', nome: 'Experiência da família com o CREIC', itens: 6, quem: 'Pais', momentos: 'Após cada marco', icf: ['E'],
+          porque: 'Inclui a articulação com creche e escola.', estadoPT: 'original em português' }
+      ] },
+    { faixa: '3 aos 5 anos', idadeRef: 'pré-escolar', quem: 'Pais e educadora',
       instrumentos: [
-        { sigla:'MAIS / MUSS', nome:'Meaningful Auditory Integration Scale / Meaningful Use of Speech Scale', mede:'Integração auditiva e uso da fala com intenção comunicativa', itens:'10 + 10', quem:'Pais',
-          momentos:'6 · 12 meses · anual', porque:'Continuação natural do IT-MAIS quando a criança cresce.', estadoPT:'versão portuguesa em uso' },
-        { sigla:'PEACH / TEACH', nome:'Parents/Teachers Evaluation of Aural performance', mede:'Desempenho em casa (PEACH) e na creche ou jardim de infância (TEACH)', itens:'13 + 11', quem:'Pais e educadora',
-          momentos:'Início de cada ano letivo · anual', porque:'A educadora vê a criança em ruído e com pares — situações que os pais não observam.', estadoPT:'versão portuguesa a confirmar' },
-        { sigla:'CCIPP', nome:'Children with Cochlear Implants: Parental Perspectives', mede:'Oito domínios da perspetiva dos pais: comunicação, autoestima, apoio, decisão, efeitos do implante', itens:74, quem:'Pais',
-          momentos:'12 meses · a cada 2 anos', porque:'É o único que pergunta aos pais o que mudou na família, incluindo o arrependimento ou a confirmação da decisão.', estadoPT:'versão portuguesa a confirmar' },
-        { sigla:'PedsQL 2-4', nome:'PedsQL 4.0 Generic Core (pré-escolar)', mede:'Qualidade de vida genérica', itens:21, quem:'Pais',
-          momentos:'Anual', porque:'Mantém a série genérica comparável ao longo de toda a infância.', estadoPT:'versão portuguesa validada; licença necessária' }
-      ]
-    },
-    {
-      faixa: '6 aos 12 anos',
-      idadeRef: 'idade escolar',
-      quem: 'A criança (com apoio na leitura), os pais e o professor',
+        { sigla: 'MAIS / MUSS', nome: 'Meaningful Auditory Integration / Use of Speech', itens: 20, quem: 'Pais', momentos: '6 · 12 meses · anual', icf: ['F', 'A'],
+          porque: 'Continuação do IT-MAIS.', estadoPT: 'em uso (confirmar)' },
+        { sigla: 'PEACH / TEACH', nome: 'Desempenho em casa e na creche', itens: '13 + 11', quem: 'Pais e educadora', momentos: 'Início do ano letivo · anual', icf: ['A', 'E'],
+          porque: 'A educadora vê a criança em ruído e com pares.', estadoPT: 'confirmar' },
+        { sigla: 'CCIPP', nome: 'Children with Cochlear Implants: Parental Perspectives', itens: 74, quem: 'Pais', momentos: '12 meses · a cada 2 anos', icf: ['A', 'E'],
+          porque: 'Pergunta pelo processo de decisão e pelo apoio recebido.', estadoPT: 'confirmar' },
+        { sigla: 'PedsQL 2–4', nome: 'PedsQL 4.0 Generic Core', itens: 21, quem: 'Pais', momentos: 'Anual', icf: ['F', 'A'],
+          porque: 'Série genérica comparável ao longo da infância.', estadoPT: 'validada; licença' }
+      ] },
+    { faixa: '6 aos 12 anos', idadeRef: 'idade escolar', quem: 'A criança com apoio, os pais e o professor',
       instrumentos: [
-        { sigla:'HEAR-QL-26', nome:'Hearing Environments and Reflection on Quality of Life (7-12 anos)', mede:'Qualidade de vida específica da perda auditiva, na voz da criança', itens:26, quem:'Criança',
-          momentos:'Basal · 6 · 12 meses · anual', porque:'É aqui que a criança começa a ser a melhor fonte sobre a sua própria vida — e as respostas dela divergem frequentemente das dos pais.', estadoPT:'versão portuguesa a confirmar' },
-        { sigla:'PedsQL 8-12', nome:'PedsQL 4.0 Generic Core', mede:'Qualidade de vida genérica, em versão da criança e dos pais', itens:23, quem:'Criança + pais (as duas)',
-          momentos:'Anual', porque:'Responder as duas versões mostra a diferença entre o que a criança sente e o que os pais julgam que ela sente.', estadoPT:'versão portuguesa validada; licença necessária' },
-        { sigla:'SSQ-C / SSQ-P', nome:'SSQ para crianças e para pais', mede:'Audição no dia a dia: conversa, ruído, localização', itens:'~20', quem:'Criança e pais',
-          momentos:'Anual', porque:'Liga a série pediátrica ao SSQ12 usado no adulto, o que dá continuidade de medida ao longo da vida.', estadoPT:'versão portuguesa a confirmar' },
-        { sigla:'TEACH', nome:'Teachers Evaluation of Aural performance of Children', mede:'Desempenho auditivo na sala de aula', itens:11, quem:'Professor',
-          momentos:'Início e fim de cada ano letivo', porque:'A sala de aula é o pior ambiente acústico da vida da criança e o mais determinante para a aprendizagem.', estadoPT:'versão portuguesa a confirmar' },
-        { sigla:'Fadiga auditiva', nome:'Escala de fadiga relacionada com a audição (versões criança, pais e professor)', mede:'Cansaço causado pelo esforço de escutar ao longo do dia escolar', itens:'~15', quem:'Criança, pais e professor',
-          momentos:'Anual', porque:'A criança implantada ouve — e chega a casa esgotada. Sem medir, confunde-se fadiga com desinteresse ou mau comportamento.', estadoPT:'versão portuguesa a confirmar' }
-      ]
-    },
-    {
-      faixa: '13 aos 17 anos',
-      idadeRef: 'adolescência e preparação da transição',
-      quem: 'O próprio adolescente (os pais passam a complementar, não a substituir)',
+        { sigla: 'HEAR-QL-26', nome: 'Qualidade de vida na perda auditiva (7–12)', itens: 26, quem: 'Criança', momentos: 'Basal · 6 · 12 meses · anual', icf: ['A', 'E'],
+          porque: 'A criança passa a ser a melhor fonte sobre a sua vida.', estadoPT: 'confirmar' },
+        { sigla: 'PedsQL 8–12', nome: 'PedsQL 4.0 (criança e pais)', itens: 23, quem: 'Criança + pais', momentos: 'Anual', icf: ['F', 'A'],
+          porque: 'As duas versões mostram a diferença entre o que a criança sente e o que os pais julgam.', estadoPT: 'validada; licença' },
+        { sigla: 'TEACH', nome: 'Desempenho na sala de aula', itens: 11, quem: 'Professor', momentos: 'Início e fim do ano letivo', icf: ['A', 'E'],
+          porque: 'A sala de aula é o pior ambiente acústico da vida da criança.', estadoPT: 'confirmar' },
+        { sigla: 'VFS-Peds', nome: 'Fadiga relacionada com a audição', itens: 10, quem: 'Criança, pais, professor', momentos: 'Anual', icf: ['F', 'A'],
+          porque: 'Sem medir, confunde-se fadiga com desinteresse.', estadoPT: 'confirmar' }
+      ] },
+    { faixa: '12 aos 17 anos', idadeRef: 'adolescência e preparação da transição', quem: 'O próprio (os pais complementam)',
       instrumentos: [
-        { sigla:'HEAR-QL-28', nome:'HEAR-QL para adolescentes (13-18 anos)', mede:'Qualidade de vida específica da perda auditiva na adolescência', itens:28, quem:'Adolescente',
-          momentos:'Anual', porque:'Cobre o que pesa nesta idade: grupo de pares, ruído social, identidade e uso ou não uso do dispositivo em público.', estadoPT:'versão portuguesa a confirmar' },
-        { sigla:'PedsQL 13-18', nome:'PedsQL 4.0 Generic Core', mede:'Qualidade de vida genérica', itens:23, quem:'Adolescente',
-          momentos:'Anual', porque:'Fecha a série genérica iniciada na primeira infância.', estadoPT:'versão portuguesa validada; licença necessária' },
-        { sigla:'SSQ12', nome:'Speech, Spatial and Qualities of Hearing Scale — versão curta', mede:'Audição na vida real', itens:12, quem:'Adolescente',
-          momentos:'Anual, a partir dos 14 anos', porque:'Começar cedo o instrumento do adulto cria uma linha de base que atravessa a transição sem quebra.', estadoPT:'versão portuguesa em uso corrente' },
-        { sigla:'CIQOL-10 Global', nome:'Cochlear Implant Quality of Life — versão global', mede:'Qualidade de vida específica do implante', itens:10, quem:'Adolescente',
-          momentos:'A partir dos 16 anos, anual', porque:'Introduzido dois anos antes da transição, dá continuidade à medida quando o jovem passa para a área de adulto.', estadoPT:'versão portuguesa a confirmar' },
-        { sigla:'Transição', nome:'Questionário de preparação para a transição', mede:'Autonomia: sabe explicar o seu diagnóstico, marcar consultas, resolver avarias, pedir apoio', itens:10, quem:'Adolescente',
-          momentos:'16 e 17 anos', porque:'A transição falha quando o jovem chega à área de adulto sem nunca ter falado por si. Isto mede-o antes de acontecer.', estadoPT:'instrumento local, a construir' }
-      ]
-    }
+        { sigla: 'HEAR-QL-28', nome: 'Qualidade de vida na perda auditiva (13–18)', itens: 28, quem: 'Adolescente', momentos: 'Anual', icf: ['A', 'E'],
+          porque: 'Pares, ruído social, identidade e uso do dispositivo em público.', estadoPT: 'confirmar' },
+        { sigla: 'MuRQoL', nome: 'Music-Related Quality of Life', itens: 36, quem: 'Adolescente', momentos: 'Anual, a partir dos 12 anos', icf: ['A', 'E'],
+          porque: 'Já aplicado a adolescentes a partir dos 12 anos (Frosolini et al., 2022).', estadoPT: 'portuguesa por fazer' },
+        { sigla: 'SSQ12 e CIQOL-10', nome: 'Instrumentos de adulto introduzidos antes da transição', itens: '12 + 10', quem: 'Adolescente', momentos: 'SSQ12 desde os 14 · CIQOL-10 desde os 16', icf: ['F', 'A', 'E'],
+          porque: 'Começar antes cria uma linha de base que atravessa a mudança de área sem quebra de série.', estadoPT: 'ver adulto' },
+        { sigla: 'Transição', nome: 'Preparação para a área de adulto (instrumento local)', itens: 6, quem: 'Adolescente', momentos: '16 e 17 anos', icf: ['A', 'E'],
+          porque: 'A transição falha quando o jovem chega à área de adulto sem nunca ter falado por si.', estadoPT: 'original em português' }
+      ] }
   ],
 
-  /* medidas que a equipa observa — não são PROMs, mas completam o retrato */
   observadas: [
-    { sigla:'CAP-II',  nome:'Categories of Auditory Performance', mede:'Escala de 0 a 9 do desempenho auditivo funcional, atribuída pelo clínico' },
-    { sigla:'SIR',     nome:'Speech Intelligibility Rating',      mede:'Inteligibilidade da fala da criança para um ouvinte não familiarizado, de 1 a 5' },
-    { sigla:'Datalogging', nome:'Horas de uso do processador',    mede:'Uso real por dia, lido do dispositivo — o preditor isolado mais forte do resultado' },
-    { sigla:'Testes vocais', nome:'Discriminação no silêncio e no ruído', mede:'Percentagem de palavras e frases compreendidas em cabine' }
+    { sigla: 'Testes vocais', nome: 'Discriminação no silêncio e no ruído', mede: 'Percentagem de palavras e frases compreendidas em cabine; SRT no ruído.' },
+    { sigla: 'Datalogging', nome: 'Horas de uso do processador', mede: 'Uso real por dia, lido do dispositivo em cada programação.' },
+    { sigla: 'CAP-II e SIR', nome: 'Categories of Auditory Performance · Speech Intelligibility Rating', mede: 'Escalas atribuídas pelo clínico em pediatria.' },
+    { sigla: 'Resultados sociais', nome: 'Situação profissional e escolaridade', mede: 'Registados na candidatura e anualmente. Base do benefício social (Neve et al., 2021).' }
   ],
 
-  /* quando se recolhe */
   momentos: [
-    { quando:'Candidatura (basal)', adulto:'CIQOL-10, SSQ12, EQ-5D-5L, APHAB, + módulos conforme queixa', pediatria:'LittlEARS ou faixa correspondente, PedsQL, PEACH' },
-    { quando:'Pré-cirurgia',        adulto:'DHI se risco vestibular',                                      pediatria:'—' },
-    { quando:'Ativação',            adulto:'—',                                                            pediatria:'LittlEARS (início da contagem da idade auditiva)' },
-    { quando:'3 meses',             adulto:'CIQOL-10, SSQ12',                                              pediatria:'IT-MAIS/MAIS, PEACH' },
-    { quando:'6 meses',             adulto:'CIQOL-10, SSQ12, THI se acufeno',                              pediatria:'Faixa correspondente + HEAR-QL a partir dos 7 anos' },
-    { quando:'12 meses',            adulto:'Bateria completa: CIQOL, SSQ12, NCIQ, EQ-5D-5L, IOI-CI, HADS', pediatria:'Bateria completa da faixa + CCIPP' },
-    { quando:'Anual',               adulto:'CIQOL-10, IOI-CI, EQ-5D-5L',                                   pediatria:'Faixa correspondente + TEACH no início do ano letivo' }
+    { quando: 'Candidatura (basal)', adulto: 'CIQOL-10, SSQ12, HUI-3, CIQOL-35, APHAB no início e fim da prova; HADS; esforço auditivo; situação profissional', pediatria: 'Instrumentos da faixa etária; PedsQL; escolaridade' },
+    { quando: 'Aconselhamento pré-implante', adulto: 'CIQOL-Expectations antes e depois da consulta', pediatria: '— (não validado em pediatria)' },
+    { quando: 'Antes da cirurgia', adulto: 'DHI se risco vestibular', pediatria: '—' },
+    { quando: 'Ativação', adulto: '—', pediatria: 'LittlEARS (início da idade auditiva)' },
+    { quando: '3 e 6 meses', adulto: 'CIQOL-10, SSQ12; PREM após o marco', pediatria: 'IT-MAIS/MAIS, PEACH; PREM família' },
+    { quando: '12 meses', adulto: 'CIQOL-10, CIQOL-35 (lido contra as expectativas), SSQ12, HUI-3, MuRQoL, PREM, situação profissional', pediatria: 'Bateria da faixa + CCIPP; escolaridade' },
+    { quando: 'Anual', adulto: 'CIQOL-10, HUI-3, situação profissional', pediatria: 'Faixa etária + TEACH no início do ano letivo' },
+    { quando: 'Atualização do processador', adulto: 'Testes vocais + APHAB + APSQ, antes e 4 semanas depois', pediatria: 'Testes adequados à idade + questionários da faixa' }
   ]
 };
+
+

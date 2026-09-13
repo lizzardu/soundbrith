@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Treino e escola — SoundBirth</title>
+<link rel="icon" type="image/png" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body class="page-tint a-carregar" data-area="pediatrico" data-pagina="treino.html">
+<div id="topbar"></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main-area">
+
+    <p class="eyebrow">Em casa e na escola</p>
+    <h1 style="font-size:1.9rem;">O treino é a vossa rotina</h1>
+    <p style="color:var(--ink-soft); max-width:68ch;">
+      Uma sessão de terapia por semana dura menos de uma hora. As outras horas acordada passam-se
+      convosco e na creche ou na escola — é aí que a linguagem se constrói. Estas atividades não são
+      trabalhos de casa: são formas de fazer o que já fazem, falando mais.
+    </p>
+    <div id="exercicios" style="max-width:840px; margin-top:22px;"><p class="hint">A carregar…</p></div>
+
+    <div class="card" style="max-width:840px; margin-top:8px;">
+      <p class="eyebrow">Creche e escola</p>
+      <div id="escola"></div>
+      <div class="banner-info" style="margin-top:14px;">
+        <span aria-hidden="true">&#128161;</span>
+        <span>Antes de cada ano letivo, a equipa combina convosco o que a sala precisa: microfone remoto,
+        lugar na sala, verificação diária dos processadores, formação da equipa. As reuniões com a escola
+        aparecem nas Marcações.</span>
+      </div>
+    </div>
+
+    <div class="card" style="max-width:840px; margin-top:22px;">
+      <p class="eyebrow">Diário da semana</p>
+      <h2 style="font-size:1.15rem;">Aconteceu alguma coisa nova?</h2>
+      <p style="font-size:.9rem; color:var(--ink-soft);">Uma palavra nova, uma reação a um som, uma birra por causa dos
+      processadores, uma queixa da escola. Tudo serve — a terapeuta lê antes da sessão.</p>
+      <form onsubmit="U.gravarDiario(event)">
+        <div class="field"><textarea name="texto" rows="3" placeholder="ex.: disse &quot;mais sumo&quot; pela primeira vez, sem apontar"></textarea></div>
+        <div class="field">
+          <label>Tirou os processadores durante o dia?</label>
+          <div class="chip-group">
+            <label class="chip"><input type="radio" name="tirou" value="nao"><span>Não, ou só a dormir</span></label>
+            <label class="chip"><input type="radio" name="tirou" value="poucas"><span>Uma ou duas vezes</span></label>
+            <label class="chip"><input type="radio" name="tirou" value="varias"><span>Várias vezes por dia</span></label>
+          </div>
+          <p class="hint" style="margin-top:8px;">Tirar muitas vezes pode ser desconforto, som mal programado, otite ou cansaço — e resolve-se numa programação.</p>
+        </div>
+        <div class="field">
+          <label>Como correu a semana?</label>
+          <div class="opcoes-q" role="radiogroup" aria-label="Como correu a semana, de 1 a 5">
+            <label><input type="radio" name="semana" value="1"><span>1</span></label>
+            <label><input type="radio" name="semana" value="2"><span>2</span></label>
+            <label><input type="radio" name="semana" value="3"><span>3</span></label>
+            <label><input type="radio" name="semana" value="4"><span>4</span></label>
+            <label><input type="radio" name="semana" value="5"><span>5</span></label>
+          </div>
+          <div class="extremos-q" style="max-width:280px;"><span>Muito difícil</span><span>Muito boa</span></div>
+        </div>
+        <button class="btn btn-wave" type="submit">Guardar semana</button>
+      </form>
+    </div>
+
+  </main>
+</div>
+
+<script charset="utf-8" src="../assets/js/vendor/supabase.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-config.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-client.js"></script>
+<script charset="utf-8" src="../assets/js/app.js"></script>
+<script charset="utf-8" src="../assets/js/paginas-utilizador.js"></script>
+<script>
+const ESC = { creche: 'Creche', pre_escolar: 'Pré-escolar', regular_sem_apoio: 'Ensino regular sem apoio', regular_com_apoio: 'Ensino regular com apoio', bilingue: 'Ensino bilingue', especial: 'Ensino especial', superior: 'Ensino superior' };
+  (async function () {
+    const s = await U.iniciar();
+    if (!s) return;
+    try {
+      await U.treino('exercicios', { fiz: 'Fizemos hoje', feito: 'Feito hoje' });
+      const sociais = (await creicApi.listarResultadosSociais(s.doente_id)).filter(r => r.escolaridade);
+      const u = sociais[0];
+      document.getElementById('escola').innerHTML = u
+        ? `<p style="margin:0;"><strong>${esc(ESC[u.escolaridade] || u.escolaridade)}</strong> <span class="hint mono">· registado ${fmtData(u.data)}</span></p>
+           ${u.notas ? '<p style="font-size:.9rem; color:var(--ink-soft); margin:6px 0 0;">' + esc(u.notas) + '</p>' : ''}`
+        : vazio('A equipa ainda não registou a situação escolar.');
+    } catch (e) { document.getElementById('exercicios').innerHTML = erroHTML(e); }
+  })();
+</script>
+</body>
+</html>

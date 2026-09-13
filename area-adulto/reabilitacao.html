@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Treino em casa — SoundBirth</title>
+<link rel="icon" type="image/png" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body class="page-tint a-carregar" data-area="adulto" data-pagina="reabilitacao.html">
+<div id="topbar"></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main-area">
+
+    <p class="eyebrow">Reabilitação auditiva</p>
+    <h1 style="font-size:1.9rem;">O treino desta semana</h1>
+    <p style="color:var(--ink-soft); max-width:68ch;">
+      O implante dá acesso ao som. Perceber o que esse som quer dizer aprende-se — um pouco todos os
+      dias. Marque cada exercício quando o fizer: a terapeuta vê estes registos antes da sessão.
+    </p>
+    <div id="exercicios" style="max-width:840px; margin-top:22px;"><p class="hint">A carregar…</p></div>
+
+    <div class="card" style="max-width:840px; margin-top:8px;">
+      <p class="eyebrow">Diário de escuta</p>
+      <h2 style="font-size:1.15rem;">Houve algum som que o surpreendeu esta semana?</h2>
+      <p style="font-size:.9rem; color:var(--ink-soft);">
+        Escreva o que reconheceu pela primeira vez, ou o que continua difícil. Estas notas dizem o
+        que o implante mudou na sua vida real — e ajudam a afinar a programação.
+      </p>
+      <form onsubmit="U.gravarDiario(event)">
+        <div class="field"><textarea name="texto" rows="4" placeholder="ex.: ouvi o micro-ondas apitar a partir da sala"></textarea></div>
+        <div class="field">
+          <label>Como correu a semana?</label>
+          <div class="opcoes-q" role="radiogroup" aria-label="Como correu a semana, de 1 a 5">
+            <label><input type="radio" name="semana" value="1"><span>1</span></label>
+            <label><input type="radio" name="semana" value="2"><span>2</span></label>
+            <label><input type="radio" name="semana" value="3"><span>3</span></label>
+            <label><input type="radio" name="semana" value="4"><span>4</span></label>
+            <label><input type="radio" name="semana" value="5"><span>5</span></label>
+          </div>
+          <div class="extremos-q" style="max-width:280px;"><span>Muito difícil</span><span>Muito boa</span></div>
+        </div>
+        <button class="btn btn-wave" type="submit">Guardar</button>
+      </form>
+    </div>
+
+    <div class="card" style="max-width:840px; margin-top:22px; border-left:4px solid var(--sign);">
+      <p class="eyebrow" style="color:var(--sign);">E a música?</p>
+      <p style="font-size:.9rem; color:var(--ink-soft); margin:0;">
+        Muitas pessoas com implante sentem falta da música. Se é importante para si, diga-o à equipa:
+        há um questionário que ajuda a perceber se um treino musical faz sentido no seu caso.
+      </p>
+    </div>
+
+  </main>
+</div>
+
+<script charset="utf-8" src="../assets/js/vendor/supabase.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-config.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-client.js"></script>
+<script charset="utf-8" src="../assets/js/app.js"></script>
+<script charset="utf-8" src="../assets/js/paginas-utilizador.js"></script>
+<script>
+(async function () {
+    if (!await U.iniciar()) return;
+    try { await U.treino('exercicios'); }
+    catch (e) { document.getElementById('exercicios').innerHTML = erroHTML(e); }
+  })();
+</script>
+</body>
+</html>

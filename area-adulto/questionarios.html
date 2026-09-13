@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Questionários — SoundBirth</title>
+<link rel="icon" type="image/png" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body class="page-tint a-carregar" data-area="adulto" data-pagina="questionarios.html">
+<div id="topbar"></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main-area">
+
+    <p class="eyebrow">Questionários</p>
+    <h1 style="font-size:1.9rem;">O que só a própria pessoa nos pode dizer</h1>
+    <p style="color:var(--ink-soft); max-width:70ch;">
+      Os testes na cabine medem o que o ouvido faz. Estes questionários medem o que a sua vida
+      mudou — conversar, trabalhar, sair, ouvir música, o cansaço ao fim do dia. Os testes de fala
+      explicam só uma pequena parte disso, e é por isso que a sua resposta conta.
+    </p>
+    <h2 style="font-size:1.25rem; margin-top:26px;">Por responder</h2>
+    <div id="pendentes" style="max-width:860px; margin-top:12px;"><p class="hint">A carregar…</p></div>
+    <div class="card" style="max-width:860px; margin-top:22px;">
+      <p class="eyebrow">Já respondidos</p>
+      <div id="feitos"></div>
+    </div>
+
+  </main>
+</div>
+
+<script charset="utf-8" src="../assets/js/vendor/supabase.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-config.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-client.js"></script>
+<script charset="utf-8" src="../assets/js/app.js"></script>
+<script charset="utf-8" src="../assets/js/paginas-utilizador.js"></script>
+<script>
+(async function () {
+    if (!await U.iniciar()) return;
+    try { await U.questionarios('pendentes', 'feitos'); }
+    catch (e) { document.getElementById('pendentes').innerHTML = erroHTML(e); }
+  })();
+</script>
+</body>
+</html>

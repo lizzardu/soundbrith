@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Questionários — SoundBirth</title>
+<link rel="icon" type="image/png" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body class="page-tint a-carregar" data-area="pediatrico" data-pagina="questionarios.html">
+<div id="topbar"></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main-area">
+
+    <p class="eyebrow">Questionários</p>
+    <h1 style="font-size:1.9rem;">O que vocês veem em casa, e nós não</h1>
+    <p style="color:var(--ink-soft); max-width:70ch;">
+      Na consulta, a criança está num gabinete silencioso com pessoas que não conhece. Em casa, na
+      creche e no parque é outra criança. Estes questionários trazem esse lado para dentro do
+      processo — e mostram, meses antes dos testes, quando alguma coisa não está a correr bem.
+    </p>
+    <div class="banner-sign" style="margin:18px 0; max-width:72ch;">
+      <span aria-hidden="true">&#128101;</span>
+      <span><strong>Quem responde muda com a idade.</strong> Até aos 6 anos respondem os pais, sobre o que
+      observam. Dos 6 aos 12 responde a criança, com ajuda só para ler. A partir dos 13, responde o
+      próprio. Cada questionário diz quem deve responder — e isso conta, porque as respostas de
+      pais e filhos nem sempre coincidem.</span>
+    </div>
+    <h2 style="font-size:1.25rem; margin-top:24px;">Por responder</h2>
+    <div id="pendentes" style="max-width:860px; margin-top:12px;"><p class="hint">A carregar…</p></div>
+    <div class="card" style="max-width:860px; margin-top:22px;">
+      <p class="eyebrow">Já respondidos</p>
+      <div id="feitos"></div>
+    </div>
+
+  </main>
+</div>
+
+<script charset="utf-8" src="../assets/js/vendor/supabase.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-config.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-client.js"></script>
+<script charset="utf-8" src="../assets/js/app.js"></script>
+<script charset="utf-8" src="../assets/js/paginas-utilizador.js"></script>
+<script>
+(async function () {
+    if (!await U.iniciar()) return;
+    try { await U.questionarios('pendentes', 'feitos'); }
+    catch (e) { document.getElementById('pendentes').innerHTML = erroHTML(e); }
+  })();
+</script>
+</body>
+</html>

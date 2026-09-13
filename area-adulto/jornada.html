@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>A minha jornada — SoundBirth</title>
+<link rel="icon" type="image/png" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body class="page-tint a-carregar" data-area="adulto" data-pagina="jornada.html">
+<div id="topbar"></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main-area">
+
+    <p class="eyebrow">A minha jornada</p>
+    <h1 style="font-size:1.9rem;">Todo o percurso, do princípio ao fim</h1>
+    <p style="color:var(--ink-soft); max-width:68ch;">
+      Este é o caminho de quem recebe um implante coclear. As etapas com <strong>visto</strong> já
+      estão feitas, a etapa a azul é onde está agora, e as restantes vêm a caminho. Cada uma diz
+      quem a faz e quanto tempo costuma demorar.
+    </p>
+    <div class="banner-info" style="margin:20px 0 24px; max-width:70ch;">
+      <span aria-hidden="true">&#8505;</span>
+      <span>Os tempos são os habituais no centro, não uma promessa. Se uma etapa demorar mais do que o
+      previsto, a equipa é avisada automaticamente.</span>
+    </div>
+    <div class="card" style="margin-bottom:22px;"><div class="onda onda-light" id="onda"></div></div>
+    <div id="jornada" style="max-width:880px;"><p class="hint">A carregar…</p></div>
+
+  </main>
+</div>
+
+<script charset="utf-8" src="../assets/js/vendor/supabase.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-config.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-client.js"></script>
+<script charset="utf-8" src="../assets/js/app.js"></script>
+<script charset="utf-8" src="../assets/js/paginas-utilizador.js"></script>
+<script>
+(async function () {
+    if (!await U.iniciar()) return;
+    try { await U.jornada('onda', 'jornada'); }
+    catch (e) { document.getElementById('jornada').innerHTML = erroHTML(e); }
+  })();
+</script>
+</body>
+</html>

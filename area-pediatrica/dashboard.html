@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Início — SoundBirth</title>
+<link rel="icon" type="image/png" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body class="page-tint a-carregar" data-area="pediatrico" data-pagina="dashboard.html">
+<div id="topbar"></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main-area">
+
+    <p class="eyebrow" id="saudacao">Olá</p>
+    <h1 style="font-size:1.9rem;" id="titulo">A carregar…</h1>
+    <p style="color:var(--ink-soft); max-width:66ch;" id="explicacao"></p>
+
+    <div class="grid g-4" style="margin-top:20px;">
+      <div class="card stat"><div class="num" id="s-idade">—</div><div class="lbl">Idade</div></div>
+      <div class="card stat"><div class="num" id="s-auditiva" style="color:var(--wave-deep);">—</div><div class="lbl">Idade auditiva (desde a ativação)</div></div>
+      <div class="card stat"><div class="num" id="s-uso">—</div><div class="lbl">Última leitura de uso por dia</div></div>
+      <div class="card stat"><div class="num" id="s-marcos">—</div><div class="lbl">Marcos de linguagem atingidos</div></div>
+    </div>
+
+    <div class="card" style="margin-top:22px;">
+      <p class="eyebrow">Onde estamos na jornada</p>
+      <div class="onda onda-light" id="onda"></div>
+      <p class="hint" style="margin:8px 0 0;"><strong id="contagem"></strong> · <a href="jornada.html">ver a jornada toda</a></p>
+    </div>
+
+    <div class="grid g-2" style="margin-top:22px; align-items:start;">
+      <div class="card">
+        <p class="eyebrow">Desenvolvimento da linguagem</p>
+        <p style="font-size:.9rem; color:var(--ink-soft);">Depois do implante, a linguagem segue a ordem habitual — contada a partir do dia da ativação.
+        Cada marco aparece aqui quando a terapeuta o confirma.</p>
+        <div id="marcos"></div>
+      </div>
+      <div>
+        <div class="card" id="proxima"></div>
+        <div class="card" style="margin-top:20px;" id="por-fazer"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:22px;" id="bloco-uso" hidden>
+      <p class="eyebrow">Uso dos processadores</p>
+      <div id="grafico-uso"></div>
+      <p class="hint">Nesta idade, a referência é <strong>todas as horas acordada</strong>. Cada hora sem processadores é uma hora sem linguagem a entrar.</p>
+    </div>
+
+  </main>
+</div>
+
+<script charset="utf-8" src="../assets/js/vendor/supabase.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-config.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-client.js"></script>
+<script charset="utf-8" src="../assets/js/app.js"></script>
+<script charset="utf-8" src="../assets/js/paginas-utilizador.js"></script>
+<script>
+(async function () {
+    const s = await U.iniciar();
+    if (!s) return;
+    const nome = U.primeiroNome();
+    document.getElementById('saudacao').textContent = 'Olá, ' + s.nome.split(' ')[0];
+    try {
+      const [fases, doente, marcos, marcacoes, pedidos, mensagens, progs] = await Promise.all([
+        U.jornada('onda'), creicApi.obterDoente(s.doente_id), creicApi.listarMarcos(s.doente_id),
+        creicApi.listarMarcacoes(s.doente_id), creicApi.listarPedidos(s.doente_id),
+        creicApi.listarMensagens(s.doente_id), creicApi.listarProgramacoes(s.doente_id)
+      ]);
+      const { ativa, feitas, total } = U.etapaAtual(fases);
+      document.getElementById('contagem').textContent = feitas + ' de ' + total + ' etapas feitas';
+      if (ativa) {
+        const fase = fases.find(f => f.etapas.includes(ativa));
+        document.getElementById('titulo').textContent = nome + ' está na fase: ' + fase.fase.toLowerCase();
+        document.getElementById('explicacao').innerHTML = 'Agora: <strong>' + esc(ativa.titulo_simples || ativa.titulo) + '</strong>. ' + esc(ativa.nota || '');
+      } else {
+        document.getElementById('titulo').textContent = 'A jornada de ' + nome;
+      }
+
+      document.getElementById('s-idade').textContent = idadeTexto(doente.data_nascimento);
+      document.getElementById('s-auditiva').textContent = doente.data_ativacao ? mesesTexto(mesesEntre(doente.data_ativacao)) : '—';
+      const comUso = progs.filter(p => p.uso_medio_h != null);
+      document.getElementById('s-uso').textContent = comUso.length ? num(comUso[comUso.length - 1].uso_medio_h) + ' h' : '—';
+      document.getElementById('s-marcos').textContent = marcos.length ? marcos.filter(m => m.atingido_em).length + ' de ' + marcos.length : '—';
+
+      document.getElementById('marcos').innerHTML = marcos.length ? marcos.map(m => `
+        <div class="linha-acao"><div class="corpo"><strong style="font-size:.9rem;">${esc(m.marco)}</strong><br>
+          <span class="hint mono">${m.idade_auditiva_alvo_meses != null ? 'por volta dos ' + m.idade_auditiva_alvo_meses + ' meses de idade auditiva' : ''}</span></div>
+          <div class="acoes"><span class="pill ${m.atingido_em ? 'pill-ok' : 'pill-pending'}">${m.atingido_em ? fmtData(m.atingido_em) : 'a caminho'}</span></div></div>`).join('')
+        : vazio('A terapeuta ainda não registou marcos.');
+
+      const futura = marcacoes.find(m => m.quando && new Date(m.quando) > new Date() && ['marcada', 'confirmada'].includes(m.estado));
+      document.getElementById('proxima').innerHTML = '<p class="eyebrow">A seguir</p>' + (futura
+        ? `<h2 style="font-size:1.1rem;">${esc(futura.tipo)}</h2><p class="mono" style="color:var(--wave-deep); font-size:.9rem; margin-bottom:6px;">${fmtDataHora(futura.quando)}</p>
+           <p style="font-size:.88rem; color:var(--ink-soft);">${esc([futura.local, futura.profissional].filter(Boolean).join(' · '))}</p>
+           <a class="btn btn-ghost btn-sm" href="marcacoes.html">Ver marcações ou pedir apoio</a>`
+        : vazio('Sem consultas marcadas.'));
+
+      const pend = pedidos.filter(p => p.estado === 'pendente');
+      const porLer = mensagens.filter(m => m.papel_autor === 'profissional' && !m.lida_utilizador_em).length;
+      const itens = pend.map(p => `<li><a href="questionarios.html">${esc(p.questionarios.sigla)}</a>${p.prazo ? ' — até ' + fmtData(p.prazo) : ''}</li>`);
+      if (porLer) itens.push(`<li><a href="mensagens.html">${porLer} ${porLer === 1 ? 'mensagem' : 'mensagens'} da equipa</a> por ler</li>`);
+      document.getElementById('por-fazer').innerHTML = '<p class="eyebrow">Por fazer</p>' + (itens.length
+        ? `<ul style="margin:0; padding-left:20px; font-size:.92rem; line-height:1.9;">${itens.join('')}</ul>` : vazio('Nada por fazer. Obrigado.'));
+
+      const ult = comUso.slice(-8);
+      if (ult.length) {
+        document.getElementById('bloco-uso').hidden = false;
+        desenharBarras('grafico-uso', ult.map(p => Number(p.uso_medio_h)), ult.map(p => fmtData(p.data).slice(3)),
+          { max: 14, unidade: ' h', alvo: 11, alvoTxt: 'todas as horas acordada', descricao: 'Horas de uso diário dos processadores' });
+      }
+    } catch (e) {
+      document.getElementById('titulo').textContent = 'Não foi possível carregar';
+      document.getElementById('explicacao').innerHTML = erroHTML(e);
+    }
+  })();
+</script>
+</body>
+</html>

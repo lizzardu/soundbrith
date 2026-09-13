@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Mensagens — SoundBirth</title>
+<link rel="icon" type="image/png" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body class="page-tint a-carregar" data-area="adulto" data-pagina="mensagens.html">
+<div id="topbar"></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main-area">
+
+    <p class="eyebrow">Mensagens</p>
+    <h1 style="font-size:1.9rem;">Falar com a equipa, por escrito</h1>
+    <p style="color:var(--ink-soft); max-width:68ch;">
+      O canal principal de contacto com o CREIC. Respondemos em dias úteis. Se o processador deixou
+      de funcionar, marque a mensagem como urgente: aparece em destaque à equipa.
+    </p>
+    <div class="banner-alert" style="margin:18px 0; max-width:70ch;">
+      <span aria-hidden="true">&#9888;</span>
+      <span><strong>Não use as mensagens numa emergência médica.</strong> Febre alta, dor forte, ferida inflamada ou
+      a zona do implante inchada: dirija-se ao serviço de urgência (ou ligue 112) e leve o cartão do implante.</span>
+    </div>
+    <div class="card" style="max-width:780px;" id="mensagens"><p class="hint">A carregar…</p></div>
+    <div class="card" style="max-width:780px; margin-top:22px;">
+      <p class="eyebrow">Como quero ser contactado</p>
+      <div id="preferencias"></div>
+    </div>
+
+  </main>
+</div>
+
+<script charset="utf-8" src="../assets/js/vendor/supabase.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-config.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-client.js"></script>
+<script charset="utf-8" src="../assets/js/app.js"></script>
+<script charset="utf-8" src="../assets/js/paginas-utilizador.js"></script>
+<script>
+(async function () {
+    if (!await U.iniciar()) return;
+    try { await Promise.all([U.mensagens('mensagens'), U.preferencias('preferencias')]); }
+    catch (e) { document.getElementById('mensagens').innerHTML = erroHTML(e); }
+  })();
+</script>
+</body>
+</html>

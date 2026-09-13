@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Marcações — SoundBirth</title>
+<link rel="icon" type="image/png" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body class="page-tint a-carregar" data-area="adulto" data-pagina="marcacoes.html">
+<div id="topbar"></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main-area">
+
+    <p class="eyebrow">Marcações</p>
+    <h1 style="font-size:1.9rem;">As minhas consultas</h1>
+    <p style="color:var(--ink-soft); max-width:68ch;">
+      Pode pedir intérprete de Língua Gestual Portuguesa ou transcrição para cada consulta, e pedir
+      uma consulta nova — tudo por escrito, sem telefonar.
+    </p>
+    <div id="marcacoes" style="margin-top:22px; max-width:840px;"><p class="hint">A carregar…</p></div>
+
+  </main>
+</div>
+
+<script charset="utf-8" src="../assets/js/vendor/supabase.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-config.js"></script>
+<script charset="utf-8" src="../assets/js/supabase-client.js"></script>
+<script charset="utf-8" src="../assets/js/app.js"></script>
+<script charset="utf-8" src="../assets/js/paginas-utilizador.js"></script>
+<script>
+(async function () {
+    if (!await U.iniciar()) return;
+    try { await U.marcacoes('marcacoes'); }
+    catch (e) { document.getElementById('marcacoes').innerHTML = erroHTML(e); }
+  })();
+</script>
+</body>
+</html>
