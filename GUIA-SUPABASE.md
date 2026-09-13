@@ -64,7 +64,8 @@ Repita para cada profissional. A última consulta do ficheiro lista quem tem ace
 ## 5. Ligar o site ao projeto
 
 1. **Project Settings → API**: copie o **Project URL** e a **anon public key**
-   (nunca a `service_role`)
+   (nunca a `service_role`). O Project URL é o endereço do **Supabase**, sempre no formato
+   `https://<identificador>.supabase.co` — não o endereço do site no GitHub
 2. Abra `assets/js/supabase-config.js` e substitua os dois valores
 
 ```js
@@ -152,6 +153,7 @@ com a resposta, junto com quem respondeu, a idade e a idade auditiva.
 | Sintoma | Causa provável |
 |---|---|
 | "Plataforma por configurar" em todas as páginas | `supabase-config.js` ainda tem os valores de exemplo |
+| "JSON.parse: unexpected character" ao entrar | `SUPABASE_URL` não é o endereço `https://….supabase.co` do projeto (ex. tem o endereço do GitHub Pages) |
 | Entra, mas volta sempre para "Ativar conta" | A conta existe mas não tem perfil: falta o código (utilizador) ou o `03_…` (profissional) |
 | "Este email já tem conta com outra palavra-passe, ou o projeto exige confirmação por email" | "Confirm email" está ligado (passo 3), ou a pessoa já ativou com outra password |
 | "Código inválido, já usado ou expirado para este email" | Email diferente do registado no convite, código já usado, ou mais de 7 dias — gere outro na ficha |
