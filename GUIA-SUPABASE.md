@@ -25,6 +25,7 @@ ordem, cole o conteúdo inteiro e carregue em **Run**:
 | `01_schema.sql` | Tabelas, funções, gatilhos, vistas e regras de acesso (RLS) |
 | `02_catalogo.sql` | As etapas das duas jornadas e o catálogo de 26 questionários. Pode voltar a correr-se para atualizar |
 | `04_dados_demo.sql` | **Opcional.** Sete doentes fictícios (`DEMO-…`), cada um a mostrar uma regra de alerta |
+| `05_um_doente_demo.sql` | **Opcional, depois do 04.** Deixa só o doente DEMO-0142 e gera um código para entrar como ele |
 
 O `03_primeiro_profissional.sql` corre-se no passo 4, depois de existir a conta.
 

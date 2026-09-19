@@ -123,6 +123,7 @@ Pasta `database/`, a correr por ordem no SQL Editor do Supabase:
 | `02_catalogo.sql` | Etapas das duas jornadas e catálogo de questionários (idempotente) |
 | `03_primeiro_profissional.sql` | Dá papel de profissional a uma conta já criada |
 | `04_dados_demo.sql` | Opcional: 7 doentes fictícios `DEMO-…`, um por tipo de alerta |
+| `05_um_doente_demo.sql` | Opcional: deixa só o DEMO-0142 e gera o código de acesso dele |
 
 Tabelas principais: `doentes` (com `grupo`), `perfis` (`papel` utilizador/profissional),
 `preferencias_comunicacao`, `etapas_modelo`, `jornada_doente`, `convites`, `marcacoes`,
