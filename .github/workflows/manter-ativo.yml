@@ -1,0 +1,37 @@
+name: Manter o Supabase ativo
+
+# Um projeto Supabase gratuito é suspenso ao fim de 7 dias sem atividade.
+# Este agendamento chama a função ping() à segunda e à quinta-feira.
+# Também pode ser corrido à mão: separador Actions → este fluxo → "Run workflow".
+
+on:
+  schedule:
+    - cron: '17 8 * * 1,4'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Chamar a base de dados
+        run: |
+          set -euo pipefail
+          CFG=assets/js/supabase-config.js
+          URL=$(grep -oE 'https://[a-z0-9]+\.supabase\.co' "$CFG" | head -1)
+          KEY=$(grep -oE 'eyJ[A-Za-z0-9._-]+' "$CFG" | head -1)
+          if [ -z "$URL" ] || [ -z "$KEY" ]; then
+            echo "Falta o URL ou a anon key em $CFG"; exit 1
+          fi
+          echo "Projeto: $URL"
+          CODIGO=$(curl -sS -o resposta.txt -w '%{http_code}' \
+            -X POST "$URL/rest/v1/rpc/ping" \
+            -H "apikey: $KEY" -H "Authorization: Bearer $KEY" \
+            -H 'Content-Type: application/json' \
+            -d '{"p_origem":"github-actions"}')
+          echo "HTTP $CODIGO — $(cat resposta.txt)"
+          if [ "$CODIGO" != "200" ]; then
+            echo "O batimento falhou. Se for 404, falta correr database/06_manter_ativo.sql."
+            exit 1
+          fi
